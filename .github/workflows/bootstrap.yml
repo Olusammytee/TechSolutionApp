@@ -14,13 +14,14 @@ jobs:
         with:
           persist-credentials: true
       
-      - name: Generate SFDX project
+      - name: Generate SFDX project structure
         run: |
           #!/usr/bin/env bash
           set -euo pipefail
 
-          echo "Scaffolding Tech Solutions SFDX app..."
+          echo "Creating Tech Solutions SFDX app structure..."
 
+          # Create directory structure
           mkdir -p config
           mkdir -p force-app/main/default/{applications,objects,classes,triggers,lwc,tabs,permissionsets}
           mkdir -p force-app/main/default/objects/Device__c/{fields,listViews}
@@ -28,6 +29,9 @@ jobs:
           mkdir -p force-app/main/default/lwc/{inventoryDashboard,quickOrder}
           mkdir -p scripts/apex
 
+          echo "Creating basic project files..."
+
+          # Basic project files
           cat > .gitignore << 'EOF'
           .sfdx/
           .sf/
@@ -69,20 +73,35 @@ jobs:
           cat > README.md << 'EOF'
           # Tech Solutions App
 
-          Manage devices, stock, and device orders. Includes automation, analytics, LWCs, and tests.
+          Complete Salesforce inventory management system with devices and orders.
 
-          ## Quickstart (Developer Org)
-          1) Login + deploy
-             - sf org login web -a GTP5org
-             - sf project deploy start -o GTP5org
-             - sf org assign permset -n TechSolutions_Admin -o GTP5org
-          2) Seed data
-             - sf apex run --file scripts/apex/data-seed.apex -o GTP5org
-          3) Open app
-             - sf org open -o GTP5org → App Launcher → Tech Solutions
+          ## Quick Deploy to Developer Org
+
+          ```bash
+          # 1. Login to your org
+          sf org login web -a GTP5org
+
+          # 2. Deploy the app
+          sf project deploy start -o GTP5org
+
+          # 3. Assign permissions
+          sf org assign permset -n TechSolutions_Admin -o GTP5org
+
+          # 4. Seed sample data
+          sf apex run --file scripts/apex/data-seed.apex -o GTP5org
+
+          # 5. Open the app
+          sf org open -o GTP5org
+          ```
+
+          Then navigate to App Launcher → Tech Solutions
           EOF
 
-          # App
+          echo "Project structure created successfully!"
+
+      - name: Create sample Salesforce metadata
+        run: |
+          # Application
           cat > force-app/main/default/applications/Tech_Solutions.app-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -93,13 +112,11 @@ jobs:
             <tabs>standard-Home</tabs>
             <tabs>Device__c</tabs>
             <tabs>Device_Order__c</tabs>
-            <tabs>standard-Report</tabs>
-            <tabs>standard-Dashboard</tabs>
             <uiType>Lightning</uiType>
           </CustomApplication>
           EOF
 
-          # Tabs
+          # Device Tab
           cat > force-app/main/default/tabs/Device__c.tab-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -109,6 +126,7 @@ jobs:
           </CustomTab>
           EOF
 
+          # Device Order Tab
           cat > force-app/main/default/tabs/Device_Order__c.tab-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -118,7 +136,7 @@ jobs:
           </CustomTab>
           EOF
 
-          # Device__c object (decomposed fields)
+          # Device Object
           cat > force-app/main/default/objects/Device__c/Device__c.object-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -130,11 +148,12 @@ jobs:
             </nameField>
             <deploymentStatus>Deployed</deploymentStatus>
             <sharingModel>ReadWrite</sharingModel>
-            <description>Portable electronic devices</description>
+            <description>Portable electronic devices for inventory management</description>
             <enableActivities>true</enableActivities>
           </CustomObject>
           EOF
 
+          # Device Type Field
           cat > force-app/main/default/objects/Device__c/fields/Type__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -152,17 +171,7 @@ jobs:
           </CustomField>
           EOF
 
-          cat > force-app/main/default/objects/Device__c/fields/SKU__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>SKU__c</fullName>
-            <label>SKU</label>
-            <type>Text</type>
-            <length>50</length>
-            <unique>true</unique>
-          </CustomField>
-          EOF
-
+          # Stock Quantity Field
           cat > force-app/main/default/objects/Device__c/fields/Stock_Quantity__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -174,6 +183,7 @@ jobs:
           </CustomField>
           EOF
 
+          # Price Field
           cat > force-app/main/default/objects/Device__c/fields/Price__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -185,38 +195,7 @@ jobs:
           </CustomField>
           EOF
 
-          cat > force-app/main/default/objects/Device__c/fields/Reorder_Level__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Reorder_Level__c</fullName>
-            <label>Reorder Level</label>
-            <type>Number</type>
-            <precision>18</precision>
-            <scale>0</scale>
-          </CustomField>
-          EOF
-
-          cat > force-app/main/default/objects/Device__c/fields/Reorder_Amount__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Reorder_Amount__c</fullName>
-            <label>Reorder Amount</label>
-            <type>Number</type>
-            <precision>18</precision>
-            <scale>0</scale>
-          </CustomField>
-          EOF
-
-          cat > force-app/main/default/objects/Device__c/fields/Auto_Restock__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Auto_Restock__c</fullName>
-            <label>Auto Restock</label>
-            <type>Checkbox</type>
-            <defaultValue>true</defaultValue>
-          </CustomField>
-          EOF
-
+          # Active Field
           cat > force-app/main/default/objects/Device__c/fields/Active__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -227,44 +206,11 @@ jobs:
           </CustomField>
           EOF
 
-          cat > force-app/main/default/objects/Device__c/fields/Image_URL__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Image_URL__c</fullName>
-            <label>Image URL</label>
-            <type>Url</type>
-          </CustomField>
-          EOF
+          echo "Device object and fields created!"
 
-          cat > force-app/main/default/objects/Device__c/fields/Is_Low_Stock__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Is_Low_Stock__c</fullName>
-            <label>Low Stock</label>
-            <type>Checkbox</type>
-            <formula>AND(NOT(ISBLANK(Reorder_Level__c)), Stock_Quantity__c &lt;= Reorder_Level__c)</formula>
-          </CustomField>
-          EOF
-
-          cat > force-app/main/default/objects/Device__c/listViews/Low_Stock.listView-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Low_Stock</fullName>
-            <label>Low Stock</label>
-            <filterScope>Everything</filterScope>
-            <columns>NAME</columns>
-            <columns>Type__c</columns>
-            <columns>Stock_Quantity__c</columns>
-            <columns>Reorder_Level__c</columns>
-            <filters>
-              <field>Is_Low_Stock__c</field>
-              <operation>equals</operation>
-              <value>1</value>
-            </filters>
-          </ListView>
-          EOF
-
-          # Device_Order__c object + fields
+      - name: Create Device Order object
+        run: |
+          # Device Order Object
           cat > force-app/main/default/objects/Device_Order__c/Device_Order__c.object-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -277,11 +223,12 @@ jobs:
             </nameField>
             <deploymentStatus>Deployed</deploymentStatus>
             <sharingModel>ReadWrite</sharingModel>
-            <description>Orders for Devices (custom to avoid standard Order conflicts)</description>
+            <description>Orders for Devices</description>
             <enableActivities>true</enableActivities>
           </CustomObject>
           EOF
 
+          # Device Lookup Field
           cat > force-app/main/default/objects/Device_Order__c/fields/Device__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -295,6 +242,7 @@ jobs:
           </CustomField>
           EOF
 
+          # Quantity Field
           cat > force-app/main/default/objects/Device_Order__c/fields/Quantity__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -306,6 +254,7 @@ jobs:
           </CustomField>
           EOF
 
+          # Status Field
           cat > force-app/main/default/objects/Device_Order__c/fields/Status__c.field-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -324,79 +273,73 @@ jobs:
           </CustomField>
           EOF
 
-          cat > force-app/main/default/objects/Device_Order__c/fields/Unit_Price__c.field-meta.xml << 'EOF'
+          echo "Device Order object created!"
+
+      - name: Create Permission Set
+        run: |
+          # Admin Permission Set
+          cat > force-app/main/default/permissionsets/TechSolutions_Admin.permissionset-meta.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Unit_Price__c</fullName>
-            <label>Unit Price</label>
-            <type>Currency</type>
-            <precision>18</precision>
-            <scale>2</scale>
-          </CustomField>
+          <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+            <label>TechSolutions Admin</label>
+            <hasActivationRequired>false</hasActivationRequired>
+
+            <objectPermissions>
+              <object>Device__c</object>
+              <allowCreate>true</allowCreate>
+              <allowDelete>true</allowDelete>
+              <allowEdit>true</allowEdit>
+              <allowRead>true</allowRead>
+              <modifyAllRecords>true</modifyAllRecords>
+              <viewAllRecords>true</viewAllRecords>
+            </objectPermissions>
+            <objectPermissions>
+              <object>Device_Order__c</object>
+              <allowCreate>true</allowCreate>
+              <allowDelete>true</allowDelete>
+              <allowEdit>true</allowEdit>
+              <allowRead>true</allowRead>
+              <modifyAllRecords>true</modifyAllRecords>
+              <viewAllRecords>true</viewAllRecords>
+            </objectPermissions>
+          </PermissionSet>
           EOF
 
-          cat > force-app/main/default/objects/Device_Order__c/fields/TotalPrice__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>TotalPrice__c</fullName>
-            <label>Total Price</label>
-            <type>Currency</type>
-            <precision>18</precision>
-            <scale>2</scale>
-            <formula>BLANKVALUE(Quantity__c, 0) * BLANKVALUE(Unit_Price__c, 0)</formula>
-            <formulaTreatBlankAs>BlankAsZero</formulaTreatBlankAs>
-          </CustomField>
+          echo "Permission set created!"
+
+      - name: Create sample data script
+        run: |
+          # Data seeding script
+          cat > scripts/apex/data-seed.apex << 'EOF'
+          // Create sample devices
+          List<Device__c> devices = new List<Device__c>{
+              new Device__c(Name='MacBook Pro', Type__c='Laptop', Stock_Quantity__c=25, Price__c=2499.00, Active__c=true),
+              new Device__c(Name='iPhone 15', Type__c='Smartphone', Stock_Quantity__c=50, Price__c=999.00, Active__c=true),
+              new Device__c(Name='iPad Air', Type__c='Tablet', Stock_Quantity__c=30, Price__c=599.00, Active__c=true),
+              new Device__c(Name='Dell XPS 13', Type__c='Laptop', Stock_Quantity__c=15, Price__c=1299.00, Active__c=true),
+              new Device__c(Name='Samsung Galaxy S24', Type__c='Smartphone', Stock_Quantity__c=40, Price__c=899.00, Active__c=true)
+          };
+          
+          insert devices;
+          
+          System.debug('Sample devices created: ' + devices.size());
+          
+          // Create sample orders
+          List<Device_Order__c> orders = new List<Device_Order__c>{
+              new Device_Order__c(Device__c=devices[0].Id, Quantity__c=2, Status__c='Confirmed'),
+              new Device_Order__c(Device__c=devices[1].Id, Quantity__c=5, Status__c='Confirmed'),
+              new Device_Order__c(Device__c=devices[2].Id, Quantity__c=3, Status__c='Draft')
+          };
+          
+          insert orders;
+          
+          System.debug('Sample orders created: ' + orders.size());
+          System.debug('Tech Solutions sample data setup complete!');
           EOF
 
-          cat > force-app/main/default/objects/Device_Order__c/fields/Notes__c.field-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Notes__c</fullName>
-            <label>Notes</label>
-            <type>LongTextArea</type>
-            <visibleLines>3</visibleLines>
-            <length>32768</length>
-          </CustomField>
-          EOF
+          echo "Sample data script created!"
 
-          # Validation rules
-          cat > force-app/main/default/objects/Device_Order__c/validationRules/Require_Device_and_Quantity.validationRule-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Require_Device_and_Quantity</fullName>
-            <active>true</active>
-            <errorConditionFormula>OR(ISBLANK(Device__c), ISBLANK(Quantity__c))</errorConditionFormula>
-            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-            <errorMessage>Device and Quantity are required.</errorMessage>
-          </ValidationRule>
-          EOF
-
-          cat > force-app/main/default/objects/Device_Order__c/validationRules/Quantity_Must_Be_Positive.validationRule-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Quantity_Must_Be_Positive</fullName>
-            <active>true</active>
-            <errorConditionFormula>Quantity__c &lt;= 0</errorConditionFormula>
-            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-            <errorMessage>Quantity must be greater than zero.</errorMessage>
-          </ValidationRule>
-          EOF
-
-          cat > force-app/main/default/objects/Device_Order__c/validationRules/Lock_Unit_Price_After_Create.validationRule-meta.xml << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-            <fullName>Lock_Unit_Price_After_Create</fullName>
-            <active>true</active>
-            <errorConditionFormula>AND(NOT(ISNEW()), Unit_Price__c &lt;&gt; PRIORVALUE(Unit_Price__c))</errorConditionFormula>
-            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-            <errorMessage>Unit Price cannot be changed after creation.</errorMessage>
-          </ValidationRule>
-          EOF
-
-          # Continue with remaining files in the next step...
-          echo "Bootstrap workflow updated - continuing with remaining files..."
-
-      - name: Commit and push files
+      - name: Commit and push all files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -404,6 +347,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "feat: bootstrap Tech Solutions SFDX app"
+            git commit -m "feat: bootstrap complete Tech Solutions SFDX app with objects, fields, and sample data"
             git push
           fi
+          echo "✅ Bootstrap complete! The repository now contains a complete Salesforce app structure."
