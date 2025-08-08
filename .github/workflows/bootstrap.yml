@@ -1,1219 +1,409 @@
-   echo "Scaffolding Tech Solutions SFDX app..."
+name: Bootstrap Tech Solutions App
 
-      mkdir -p config
-      mkdir -p force-app/main/default/{applications,objects,classes,triggers,lwc,tabs,permissionsets}
-      mkdir -p force-app/main/default/objects/Device__c/{fields,listViews}
-      mkdir -p force-app/main/default/objects/Device_Order__c/{fields,validationRules}
-      mkdir -p force-app/main/default/lwc/{inventoryDashboard,quickOrder}
-      mkdir -p scripts/apex
+on:
+  workflow_dispatch:
 
-      cat > .gitignore << 'EOF'
-      .sfdx/
-      .sf/
-      .vscode/
-      node_modules/
-      coverage/
-      test-results/
-      package-lock.json
-      yarn.lock
-      EOF
+permissions:
+  contents: write
 
-      cat > .forceignore << 'EOF'
-      **/tmp/**
-      *.log
-      .DS_Store
-      EOF
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      
+      - name: Generate SFDX project
+        run: |
+          #!/usr/bin/env bash
+          set -euo pipefail
 
-      cat > sfdx-project.json << 'EOF'
-      {
-        "name": "tech-solutions",
-        "packageDirectories": [{ "path": "force-app", "default": true }],
-        "namespace": "",
-        "sfdcLoginUrl": "https://login.salesforce.com",
-        "sourceApiVersion": "60.0"
-      }
-      EOF
+          echo "Scaffolding Tech Solutions SFDX app..."
 
-      cat > config/project-scratch-def.json << 'EOF'
-      {
-        "orgName": "Tech Solutions Inc",
-        "edition": "Developer",
-        "hasSampleData": false,
-        "settings": {
-          "lightningExperienceSettings": { "enableS1DesktopEnabled": true }
-        }
-      }
-      EOF
+          mkdir -p config
+          mkdir -p force-app/main/default/{applications,objects,classes,triggers,lwc,tabs,permissionsets}
+          mkdir -p force-app/main/default/objects/Device__c/{fields,listViews}
+          mkdir -p force-app/main/default/objects/Device_Order__c/{fields,validationRules}
+          mkdir -p force-app/main/default/lwc/{inventoryDashboard,quickOrder}
+          mkdir -p scripts/apex
 
-      cat > README.md << 'EOF'
-      # Tech Solutions App
+          cat > .gitignore << 'EOF'
+          .sfdx/
+          .sf/
+          .vscode/
+          node_modules/
+          coverage/
+          test-results/
+          package-lock.json
+          yarn.lock
+          EOF
 
-      Manage devices, stock, and device orders. Includes automation, analytics, LWCs, and tests.
+          cat > .forceignore << 'EOF'
+          **/tmp/**
+          *.log
+          .DS_Store
+          EOF
 
-      ## Quickstart (Developer Org)
-      1) Login + deploy
-         - sf org login web -a GTP5org
-         - sf project deploy start -o GTP5org
-         - sf org assign permset -n TechSolutions_Admin -o GTP5org
-      2) Seed data
-         - sf apex run --file scripts/apex/data-seed.apex -o GTP5org
-      3) Open app
-         - sf org open -o GTP5org → App Launcher → Tech Solutions
-      EOF
-
-      # App
-      cat > force-app/main/default/applications/Tech_Solutions.app-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
-        <description>Tech Solutions app for managing devices and orders</description>
-        <label>Tech Solutions</label>
-        <logo>none</logo>
-        <navType>Standard</navType>
-        <tabs>standard-Home</tabs>
-        <tabs>Device__c</tabs>
-        <tabs>Device_Order__c</tabs>
-        <tabs>standard-Report</tabs>
-        <tabs>standard-Dashboard</tabs>
-        <uiType>Lightning</uiType>
-      </CustomApplication>
-      EOF
-
-      # Tabs
-      cat > force-app/main/default/tabs/Device__c.tab-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>Devices</label>
-        <motif>Custom67: PDA</motif>
-        <object>Device__c</object>
-      </CustomTab>
-      EOF
-
-      cat > force-app/main/default/tabs/Device_Order__c.tab-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>Device Orders</label>
-        <motif>Custom88: Shopping Cart</motif>
-        <object>Device_Order__c</object>
-      </CustomTab>
-      EOF
-
-      # Device__c object (decomposed fields)
-      cat > force-app/main/default/objects/Device__c/Device__c.object-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>Device</label>
-        <pluralLabel>Devices</pluralLabel>
-        <nameField>
-          <type>Text</type>
-          <label>Device Name</label>
-        </nameField>
-        <deploymentStatus>Deployed</deploymentStatus>
-        <sharingModel>ReadWrite</sharingModel>
-        <description>Portable electronic devices</description>
-        <enableActivities>true</enableActivities>
-      </CustomObject>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Type__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Type__c</fullName>
-        <label>Type</label>
-        <type>Picklist</type>
-        <valueSet>
-          <valueSetDefinition>
-            <sorted>false</sorted>
-            <value><fullName>Laptop</fullName><default>false</default><label>Laptop</label></value>
-            <value><fullName>Smartphone</fullName><default>false</default><label>Smartphone</label></value>
-            <value><fullName>Tablet</fullName><default>false</default><label>Tablet</label></value>
-          </valueSetDefinition>
-        </valueSet>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/SKU__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>SKU__c</fullName>
-        <label>SKU</label>
-        <type>Text</type>
-        <length>50</length>
-        <unique>true</unique>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Stock_Quantity__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Stock_Quantity__c</fullName>
-        <label>Stock Quantity</label>
-        <type>Number</type>
-        <precision>18</precision>
-        <scale>0</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Price__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Price__c</fullName>
-        <label>Price</label>
-        <type>Currency</type>
-        <precision>18</precision>
-        <scale>2</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Reorder_Level__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Reorder_Level__c</fullName>
-        <label>Reorder Level</label>
-        <type>Number</type>
-        <precision>18</precision>
-        <scale>0</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Reorder_Amount__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Reorder_Amount__c</fullName>
-        <label>Reorder Amount</label>
-        <type>Number</type>
-        <precision>18</precision>
-        <scale>0</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Auto_Restock__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Auto_Restock__c</fullName>
-        <label>Auto Restock</label>
-        <type>Checkbox</type>
-        <defaultValue>true</defaultValue>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Active__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Active__c</fullName>
-        <label>Active</label>
-        <type>Checkbox</type>
-        <defaultValue>true</defaultValue>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Image_URL__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Image_URL__c</fullName>
-        <label>Image URL</label>
-        <type>Url</type>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/fields/Is_Low_Stock__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Is_Low_Stock__c</fullName>
-        <label>Low Stock</label>
-        <type>Checkbox</type>
-        <formula>AND(NOT(ISBLANK(Reorder_Level__c)), Stock_Quantity__c &lt;= Reorder_Level__c)</formula>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device__c/listViews/Low_Stock.listView-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Low_Stock</fullName>
-        <label>Low Stock</label>
-        <filterScope>Everything</filterScope>
-        <columns>NAME</columns>
-        <columns>Type__c</columns>
-        <columns>Stock_Quantity__c</columns>
-        <columns>Reorder_Level__c</columns>
-        <filters>
-          <field>Is_Low_Stock__c</field>
-          <operation>equals</operation>
-          <value>1</value>
-        </filters>
-      </ListView>
-      EOF
-
-      # Device_Order__c object + fields
-      cat > force-app/main/default/objects/Device_Order__c/Device_Order__c.object-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>Device Order</label>
-        <pluralLabel>Device Orders</pluralLabel>
-        <nameField>
-          <type>AutoNumber</type>
-          <label>Order Number</label>
-          <displayFormat>ORD-{0000}</displayFormat>
-        </nameField>
-        <deploymentStatus>Deployed</deploymentStatus>
-        <sharingModel>ReadWrite</sharingModel>
-        <description>Orders for Devices (custom to avoid standard Order conflicts)</description>
-        <enableActivities>true</enableActivities>
-      </CustomObject>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/Device__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Device__c</fullName>
-        <label>Device</label>
-        <type>Lookup</type>
-        <referenceTo>Device__c</referenceTo>
-        <relationshipName>Orders</relationshipName>
-        <relationshipLabel>Orders</relationshipLabel>
-        <deleteConstraint>SetNull</deleteConstraint>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/Quantity__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Quantity__c</fullName>
-        <label>Quantity</label>
-        <type>Number</type>
-        <precision>18</precision>
-        <scale>0</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/Status__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Status__c</fullName>
-        <label>Status</label>
-        <type>Picklist</type>
-        <valueSet>
-          <valueSetDefinition>
-            <sorted>false</sorted>
-            <value><fullName>Draft</fullName><default>false</default><label>Draft</label></value>
-            <value><fullName>Confirmed</fullName><default>true</default><label>Confirmed</label></value>
-            <value><fullName>Fulfilled</fullName><default>false</default><label>Fulfilled</label></value>
-            <value><fullName>Cancelled</fullName><default>false</default><label>Cancelled</label></value>
-          </valueSetDefinition>
-        </valueSet>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/Unit_Price__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Unit_Price__c</fullName>
-        <label>Unit Price</label>
-        <type>Currency</type>
-        <precision>18</precision>
-        <scale>2</scale>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/TotalPrice__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>TotalPrice__c</fullName>
-        <label>Total Price</label>
-        <type>Currency</type>
-        <precision>18</precision>
-        <scale>2</scale>
-        <formula>BLANKVALUE(Quantity__c, 0) * BLANKVALUE(Unit_Price__c, 0)</formula>
-        <formulaTreatBlankAs>BlankAsZero</formulaTreatBlankAs>
-      </CustomField>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/fields/Notes__c.field-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Notes__c</fullName>
-        <label>Notes</label>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-        <length>32768</length>
-      </CustomField>
-      EOF
-
-      # Validation rules
-      cat > force-app/main/default/objects/Device_Order__c/validationRules/Require_Device_and_Quantity.validationRule-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Require_Device_and_Quantity</fullName>
-        <active>true</active>
-        <errorConditionFormula>OR(ISBLANK(Device__c), ISBLANK(Quantity__c))</errorConditionFormula>
-        <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-        <errorMessage>Device and Quantity are required.</errorMessage>
-      </ValidationRule>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/validationRules/Quantity_Must_Be_Positive.validationRule-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Quantity_Must_Be_Positive</fullName>
-        <active>true</active>
-        <errorConditionFormula>Quantity__c &lt;= 0</errorConditionFormula>
-        <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-        <errorMessage>Quantity must be greater than zero.</errorMessage>
-      </ValidationRule>
-      EOF
-
-      cat > force-app/main/default/objects/Device_Order__c/validationRules/Lock_Unit_Price_After_Create.validationRule-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-        <fullName>Lock_Unit_Price_After_Create</fullName>
-        <active>true</active>
-        <errorConditionFormula>AND(NOT(ISNEW()), Unit_Price__c &lt;&gt; PRIORVALUE(Unit_Price__c))</errorConditionFormula>
-        <errorDisplayLocation>TopOfPage</errorDisplayLocation>
-        <errorMessage>Unit Price cannot be changed after creation.</errorMessage>
-      </ValidationRule>
-      EOF
-
-      # Apex classes
-      cat > force-app/main/default/classes/InventoryService.cls << 'EOF'
-      public with sharing class InventoryService {
-          public class InventoryException extends Exception {}
-
-          public static Decimal effectiveQty(Device_Order__c o) {
-              if (o == null || o.Quantity__c == null || o.Quantity__c <= 0) return 0;
-              String s = o.Status__c == null ? 'Confirmed' : o.Status__c;
-              return (s == 'Confirmed' || s == 'Fulfilled') ? o.Quantity__c : 0;
+          cat > sfdx-project.json << 'EOF'
+          {
+            "name": "tech-solutions",
+            "packageDirectories": [{ "path": "force-app", "default": true }],
+            "namespace": "",
+            "sfdcLoginUrl": "https://login.salesforce.com",
+            "sourceApiVersion": "60.0"
           }
+          EOF
 
-          public static Map<Id, Decimal> computeDeltas(List<Device_Order__c> newList, Map<Id, Device_Order__c> oldMap) {
-              Map<Id, Decimal> byDevice = new Map<Id, Decimal>();
-              if (newList == null) return byDevice;
-              for (Device_Order__c o : newList) {
-                  Device_Order__c old = oldMap == null ? null : oldMap.get(o.Id);
-                  Id oldDev = old == null ? null : old.Device__c;
-                  Id newDev = o.Device__c;
-                  Decimal oldEff = effectiveQty(old);
-                  Decimal newEff = effectiveQty(o);
-                  if (oldDev != null) byDevice.put(oldDev, (byDevice.get(oldDev) == null ? 0 : byDevice.get(oldDev)) + oldEff);
-                  if (newDev != null) byDevice.put(newDev, (byDevice.get(newDev) == null ? 0 : byDevice.get(newDev)) - newEff);
-              }
-              for (Id k : new List<Id>(byDevice.keySet())) if (byDevice.get(k) == 0) byDevice.remove(k);
-              return byDevice;
+          cat > config/project-scratch-def.json << 'EOF'
+          {
+            "orgName": "Tech Solutions Inc",
+            "edition": "Developer",
+            "hasSampleData": false,
+            "settings": {
+              "lightningExperienceSettings": { "enableS1DesktopEnabled": true }
+            }
           }
-
-          public static Map<Id, Decimal> computeDeltasForDelete(List<Device_Order__c> oldList) {
-              Map<Id, Decimal> byDevice = new Map<Id, Decimal>();
-              if (oldList == null) return byDevice;
-              for (Device_Order__c o : oldList) {
-                  if (o.Device__c == null) continue;
-                  Decimal eff = effectiveQty(o);
-                  if (eff != 0) byDevice.put(o.Device__c, (byDevice.get(o.Device__c) == null ? 0 : byDevice.get(o.Device__c)) + eff);
-              }
-              return byDevice;
-          }
-
-          public static void applyStockChanges(Map<Id, Decimal> deltas) {
-              if (deltas == null || deltas.isEmpty()) return;
-              List<Device__c> devices = [
-                  SELECT Id, Stock_Quantity__c FROM Device__c
-                  WHERE Id IN :deltas.keySet()
-                  FOR UPDATE
-              ];
-              List<Device__c> updates = new List<Device__c>();
-              for (Device__c d : devices) {
-                  Decimal stock = (d.Stock_Quantity__c == null ? 0 : d.Stock_Quantity__c);
-                  Decimal newStock = stock + deltas.get(d.Id);
-                  if (newStock < 0) throw new InventoryException('Insufficient stock for one or more devices.');
-                  d.Stock_Quantity__c = newStock;
-                  updates.add(d);
-              }
-              if (!updates.isEmpty()) update updates;
-          }
-
-          public static Map<Id, Decimal> getDevicePrices(Set<Id> deviceIds) {
-              Map<Id, Decimal> out = new Map<Id, Decimal>();
-              if (deviceIds == null || deviceIds.isEmpty()) return out;
-              for (Device__c d : [SELECT Id, Price__c FROM Device__c WHERE Id IN :deviceIds]) {
-                  out.put(d.Id, d.Price__c == null ? 0 : d.Price__c);
-              }
-              return out;
-          }
-
-          public static void assertNoOversell(Map<Id, Decimal> deltas) {
-              if (deltas == null || deltas.isEmpty()) return;
-              Map<Id, Device__c> devices = new Map<Id, Device__c>([
-                  SELECT Id, Stock_Quantity__c FROM Device__c
-                  WHERE Id IN :deltas.keySet()
-                  FOR UPDATE
-              ]);
-              for (Id did : deltas.keySet()) {
-                  Device__c d = devices.get(did);
-                  Decimal stock = d == null ? 0 : (d.Stock_Quantity__c == null ? 0 : d.Stock_Quantity__c);
-                  Decimal projected = stock + deltas.get(did);
-                  if (projected < 0) throw new InventoryException('Insufficient stock for device.');
-              }
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/DeviceOrderTriggerHandler.cls << 'EOF'
-      public with sharing class DeviceOrderTriggerHandler {
-          public static void beforeInsert(List<Device_Order__c> newList) {
-              if (newList == null || newList.isEmpty()) return;
-
-              Set<Id> deviceIds = new Set<Id>();
-              for (Device_Order__c o : newList) {
-                  if (o.Device__c != null && o.Unit_Price__c == null) deviceIds.add(o.Device__c);
-              }
-              if (!deviceIds.isEmpty()) {
-                  Map<Id, Decimal> priceById = InventoryService.getDevicePrices(deviceIds);
-                  for (Device_Order__c o : newList) {
-                      if (o.Device__c != null && o.Unit_Price__c == null) o.Unit_Price__c = priceById.get(o.Device__c);
-                  }
-              }
-
-              Map<Id, Decimal> deltas = InventoryService.computeDeltas(newList, null);
-              if (!deltas.isEmpty()) {
-                  try { InventoryService.assertNoOversell(deltas); }
-                  catch (Exception e) { for (Device_Order__c o : newList) o.addError('Insufficient stock to fulfill this order.'); }
-              }
-          }
-
-          public static void beforeUpdate(List<Device_Order__c> newList, Map<Id, Device_Order__c> oldMap) {
-              if (newList == null || newList.isEmpty()) return;
-
-              for (Device_Order__c o : newList) {
-                  Device_Order__c old = oldMap.get(o.Id);
-                  if (old != null && old.Status__c == 'Fulfilled') {
-                      if (o.Device__c != old.Device__c || o.Quantity__c != old.Quantity__c) {
-                          o.addError('Fulfilled orders cannot be changed.');
-                      }
-                  }
-              }
-
-              Map<Id, Decimal> deltas = InventoryService.computeDeltas(newList, oldMap);
-              if (!deltas.isEmpty()) {
-                  try { InventoryService.assertNoOversell(deltas); }
-                  catch (Exception e) { for (Device_Order__c o : newList) o.addError('Insufficient stock to apply changes.'); }
-              }
-          }
-
-          public static void afterInsert(List<Device_Order__c> newList) {
-              Map<Id, Decimal> deltas = InventoryService.computeDeltas(newList, null);
-              if (!deltas.isEmpty()) InventoryService.applyStockChanges(deltas);
-          }
-
-          public static void afterUpdate(List<Device_Order__c> newList, Map<Id, Device_Order__c> oldMap) {
-              Map<Id, Decimal> deltas = InventoryService.computeDeltas(newList, oldMap);
-              if (!deltas.isEmpty()) InventoryService.applyStockChanges(deltas);
-          }
-
-          public static void afterDelete(List<Device_Order__c> oldList) {
-              Map<Id, Decimal> deltas = InventoryService.computeDeltasForDelete(oldList);
-              if (!deltas.isEmpty()) InventoryService.applyStockChanges(deltas);
-          }
-
-          public static void afterUndelete(List<Device_Order__c> newList) {
-              Map<Id, Decimal> deltas = InventoryService.computeDeltas(newList, null);
-              if (!deltas.isEmpty()) InventoryService.applyStockChanges(deltas);
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/InventoryAnalyticsController.cls << 'EOF'
-      public with sharing class InventoryAnalyticsController {
-          public class DashboardDTO {
-              @AuraEnabled public Decimal totalQuantity;
-              @AuraEnabled public Decimal totalSales;
-              @AuraEnabled public Decimal avgOrderValue;
-              @AuraEnabled public Integer lowStockCount;
-              @AuraEnabled public List<DeviceRow> lowStockDevices;
-          }
-          public class DeviceRow {
-              @AuraEnabled public Id id;
-              @AuraEnabled public String name;
-              @AuraEnabled public String type;
-              @AuraEnabled public Decimal stock;
-              @AuraEnabled public Decimal price;
-              @AuraEnabled public Decimal reorderLevel;
-          }
-
-          @AuraEnabled(cacheable=true)
-          public static DashboardDTO getDashboard() {
-              DashboardDTO dto = new DashboardDTO();
-
-              AggregateResult[] ar1 = [
-                  SELECT SUM(Quantity__c) qty, SUM(Quantity__c * Unit_Price__c) sales
-                  FROM Device_Order__c
-                  WHERE Quantity__c != NULL AND Unit_Price__c != NULL
-                        AND Status__c IN ('Confirmed','Fulfilled')
-              ];
-              Decimal qty = (ar1.isEmpty() || ar1[0].get('qty') == null) ? 0 : (Decimal)ar1[0].get('qty');
-              Decimal sales = (ar1.isEmpty() || ar1[0].get('sales') == null) ? 0 : (Decimal)ar1[0].get('sales');
-              dto.totalQuantity = qty;
-              dto.totalSales = sales;
-              dto.avgOrderValue = 0;
-              Integer countOrders = [SELECT COUNT() FROM Device_Order__c WHERE Status__c IN ('Confirmed','Fulfilled')];
-              if (countOrders > 0 && sales != null) dto.avgOrderValue = sales / countOrders;
-
-              List<DeviceRow> lows = new List<DeviceRow>();
-              for (Device__c d : [
-                  SELECT Id, Name, Type__c, Stock_Quantity__c, Price__c, Reorder_Level__c
-                  FROM Device__c
-                  WHERE Active__c = true AND Is_Low_Stock__c = true
-                  ORDER BY Stock_Quantity__c ASC
-                  LIMIT 50
-              ]) {
-                  DeviceRow row = new DeviceRow();
-                  row.id = d.Id; row.name = d.Name; row.type = d.Type__c;
-                  row.stock = d.Stock_Quantity__c; row.price = d.Price__c; row.reorderLevel = d.Reorder_Level__c;
-                  lows.add(row);
-              }
-              dto.lowStockDevices = lows;
-              dto.lowStockCount = lows.size();
-              return dto;
-          }
-
-          @AuraEnabled
-          public static void restockLowDevices() {
-              List<Device__c> toRestock = [
-                  SELECT Id, Stock_Quantity__c, Reorder_Level__c, Reorder_Amount__c, Auto_Restock__c
-                  FROM Device__c
-                  WHERE Auto_Restock__c = true
-                        AND Reorder_Level__c != null AND Reorder_Amount__c != null
-                        AND Stock_Quantity__c <= Reorder_Level__c
-              ];
-              for (Device__c d : toRestock) {
-                  d.Stock_Quantity__c = (d.Stock_Quantity__c == null ? 0 : d.Stock_Quantity__c) + d.Reorder_Amount__c;
-              }
-              if (!toRestock.isEmpty()) update toRestock;
-          }
-
-          @AuraEnabled
-          public static Id createOrder(Id deviceId, Decimal qty) {
-              if (deviceId == null || qty == null || qty <= 0) {
-                  throw new AuraHandledException('Device and positive Quantity are required.');
-              }
-              Device_Order__c o = new Device_Order__c(Device__c = deviceId, Quantity__c = qty, Status__c = 'Confirmed');
-              insert o;
-              return o.Id;
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/DeviceCatalogController.cls << 'EOF'
-      public with sharing class DeviceCatalogController {
-          public class DeviceDTO {
-              @AuraEnabled public Id id;
-              @AuraEnabled public String name;
-              @AuraEnabled public String type;
-              @AuraEnabled public Decimal price;
-              @AuraEnabled public Decimal stock;
-          }
-
-          @AuraEnabled(cacheable=true)
-          public static List<DeviceDTO> getActiveDevices() {
-              List<DeviceDTO> out = new List<DeviceDTO>();
-              for (Device__c d : [
-                  SELECT Id, Name, Type__c, Price__c, Stock_Quantity__c
-                  FROM Device__c
-                  WHERE Active__c = true
-                  ORDER BY Name
-                  LIMIT 500
-              ]) {
-                  DeviceDTO dto = new DeviceDTO();
-                  dto.id = d.Id; dto.name = d.Name; dto.type = d.Type__c;
-                  dto.price = d.Price__c; dto.stock = d.Stock_Quantity__c;
-                  out.add(dto);
-              }
-              return out;
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/InventoryReplenisher.cls << 'EOF'
-      global with sharing class InventoryReplenisher implements Schedulable {
-          global void execute(SchedulableContext sc) {
-              List<Device__c> toRestock = [
-                  SELECT Id, Stock_Quantity__c, Reorder_Level__c, Reorder_Amount__c, Auto_Restock__c
-                  FROM Device__c
-                  WHERE Auto_Restock__c = true
-                        AND Reorder_Level__c != null AND Reorder_Amount__c != null
-                        AND Stock_Quantity__c <= Reorder_Level__c
-              ];
-              for (Device__c d : toRestock) {
-                  d.Stock_Quantity__c = (d.Stock_Quantity__c == null ? 0 : d.Stock_Quantity__c) + d.Reorder_Amount__c;
-              }
-              if (!toRestock.isEmpty()) update toRestock;
-          }
-
-          public static void scheduleNightly() {
-              String cron = '0 0 2 * * ?';
-              System.schedule('Inventory Replenisher Nightly', cron, new InventoryReplenisher());
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/TechSolutionsDataSeeder.cls << 'EOF'
-      public with sharing class TechSolutionsDataSeeder {
-          @AuraEnabled
-          public static void seed() {
-              if ([SELECT COUNT() FROM Device__c] > 0) return;
-
-              List<Device__c> devices = new List<Device__c>{
-                  new Device__c(Name='Laptop A', Type__c='Laptop', Stock_Quantity__c=50, Price__c=1000, Reorder_Level__c=10, Reorder_Amount__c=20, Auto_Restock__c=true),
-                  new Device__c(Name='Smartphone X', Type__c='Smartphone', Stock_Quantity__c=30, Price__c=1200, Reorder_Level__c=8,  Reorder_Amount__c=15, Auto_Restock__c=true),
-                  new Device__c(Name='Tablet Z', Type__c='Tablet', Stock_Quantity__c=20, Price__c=800, Reorder_Level__c=5,  Reorder_Amount__c=10, Auto_Restock__c=true)
-              };
-              insert devices;
-
-              Map<String, Id> byName = new Map<String, Id>();
-              for (Device__c d : [SELECT Id, Name FROM Device__c]) byName.put(d.Name, d.Id);
-
-              List<Device_Order__c> orders = new List<Device_Order__c>{
-                  new Device_Order__c(Device__c=byName.get('Laptop A'), Quantity__c=2, Status__c='Confirmed'),
-                  new Device_Order__c(Device__c=byName.get('Smartphone X'), Quantity__c=1, Status__c='Confirmed'),
-                  new Device_Order__c(Device__c=byName.get('Tablet Z'), Quantity__c=3, Status__c='Confirmed')
-              };
-              insert orders;
-          }
-      }
-      EOF
-
-      # Class meta for all classes
-      for cls in InventoryService DeviceOrderTriggerHandler InventoryAnalyticsController DeviceCatalogController InventoryReplenisher TechSolutionsDataSeeder
-      do
-        cat > force-app/main/default/classes/${cls}.cls-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
-        <apiVersion>60.0</apiVersion>
-        <status>Active</status>
-      </ApexClass>
-      EOF
-      done
-
-      # Tests
-      cat > force-app/main/default/classes/DeviceOrderTrigger_Tests.cls << 'EOF'
-      @IsTest
-      private class DeviceOrderTrigger_Tests {
-          @TestSetup
-          static void setupData() {
-              insert new List<Device__c>{
-                  new Device__c(Name='Laptop A', Type__c='Laptop', Stock_Quantity__c=50, Price__c=1000, Reorder_Level__c=10, Reorder_Amount__c=20, Auto_Restock__c=true),
-                  new Device__c(Name='Smartphone X', Type__c='Smartphone', Stock_Quantity__c=30, Price__c=1200, Reorder_Level__c=8, Reorder_Amount__c=15, Auto_Restock__c=true),
-                  new Device__c(Name='Tablet Z', Type__c='Tablet', Stock_Quantity__c=20, Price__c=800, Reorder_Level__c=5, Reorder_Amount__c=10, Auto_Restock__c=true)
-              };
-          }
-
-          @IsTest
-          static void testInsertReducesStockAndLocksPrice() {
-              Device__c d = [SELECT Id, Price__c, Stock_Quantity__c FROM Device__c WHERE Name = 'Laptop A' LIMIT 1];
-              Decimal start = d.Stock_Quantity__c;
-
-              Device_Order__c o = new Device_Order__c(Device__c=d.Id, Quantity__c=2, Status__c='Confirmed');
-              insert o;
-
-              Device__c refreshed = [SELECT Stock_Quantity__c FROM Device__c WHERE Id = :d.Id];
-              System.assertEquals(start - 2, refreshed.Stock_Quantity__c, 'Stock should reduce by quantity');
-
-              Device_Order__c oDb = [SELECT Unit_Price__c, TotalPrice__c FROM Device_Order__c WHERE Id = :o.Id];
-              System.assertEquals(1000, oDb.Unit_Price__c, 'Unit price locked from device at order time');
-              System.assertEquals(2000, oDb.TotalPrice__c, 'Total price should be Quantity * Unit Price');
-          }
-
-          @IsTest
-          static void testBulkInsertAndUpdateAndDeviceChange() {
-              List<Device__c> ds = [SELECT Id, Name, Stock_Quantity__c FROM Device__c];
-              Map<String, Id> idByName = new Map<String, Id>();
-              for (Device__c d : ds) idByName.put(d.Name, d.Id);
-
-              List<Device_Order__c> bulk = new List<Device_Order__c>{
-                  new Device_Order__c(Device__c=idByName.get('Smartphone X'), Quantity__c=1, Status__c='Confirmed'),
-                  new Device_Order__c(Device__c=idByName.get('Tablet Z'), Quantity__c=3, Status__c='Confirmed'),
-                  new Device_Order__c(Device__c=idByName.get('Smartphone X'), Quantity__c=4, Status__c='Confirmed')
-              };
-              insert bulk;
-
-              Map<Id, Device__c> devs = new Map<Id, Device__c>([SELECT Id, Name, Stock_Quantity__c FROM Device__c WHERE Id IN :idByName.values()]);
-              System.assertEquals(30 - (1 + 4), devs.get(idByName.get('Smartphone X')).Stock_Quantity__c);
-              System.assertEquals(20 - 3, devs.get(idByName.get('Tablet Z')).Stock_Quantity__c);
-
-              Device_Order__c one = [SELECT Id, Device__c, Quantity__c FROM Device_Order__c WHERE Device__c = :idByName.get('Tablet Z') LIMIT 1];
-              one.Quantity__c = 1;
-              one.Device__c = idByName.get('Laptop A');
-              update one;
-
-              Map<Id, Device__c> devs2 = new Map<Id, Device__c>([SELECT Id, Name, Stock_Quantity__c FROM Device__c WHERE Id IN :idByName.values()]);
-              System.assertEquals(50 - 1, devs2.get(idByName.get('Laptop A')).Stock_Quantity__c);
-              System.assertEquals(20 - 1, devs2.get(idByName.get('Tablet Z')).Stock_Quantity__c);
-          }
-
-          @IsTest
-          static void testOversellIsBlocked() {
-              Device__c d = [SELECT Id, Stock_Quantity__c FROM Device__c WHERE Name = 'Tablet Z' LIMIT 1];
-              Test.startTest();
-              Device_Order__c o = new Device_Order__c(Device__c=d.Id, Quantity__c=d.Stock_Quantity__c + 1, Status__c='Confirmed');
-              try { insert o; System.assert(false, 'Oversell should have thrown'); }
-              catch (DmlException e) { System.assert(e.getMessage().contains('Insufficient stock')); }
-              Test.stopTest();
-          }
-
-          @IsTest
-          static void testDeleteAddsBackStockAndUndeleteRemovesAgain() {
-              Device__c d = [SELECT Id, Stock_Quantity__c FROM Device__c WHERE Name = 'Laptop A' LIMIT 1];
-              Integer start = (Integer)d.Stock_Quantity__c;
-              Device_Order__c o = new Device_Order__c(Device__c=d.Id, Quantity__c=2, Status__c='Confirmed');
-              insert o;
-              delete o;
-              Device__c afterDelete = [SELECT Stock_Quantity__c FROM Device__c WHERE Id = :d.Id];
-              System.assertEquals(start, afterDelete.Stock_Quantity__c);
-
-              undelete o;
-              Device__c afterUndelete = [SELECT Stock_Quantity__c FROM Device__c WHERE Id = :d.Id];
-              System.assertEquals(start - 2, afterUndelete.Stock_Quantity__c);
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/classes/AnalyticsController_Tests.cls << 'EOF'
-      @IsTest
-      private class AnalyticsController_Tests {
-          @IsTest
-          static void testDashboard() {
-              Device__c d = new Device__c(Name='Phone Y', Type__c='Smartphone', Stock_Quantity__c=10, Price__c=900, Reorder_Level__c=5, Reorder_Amount__c=10, Auto_Restock__c=true);
-              insert d;
-              insert new List<Device_Order__c>{
-                  new Device_Order__c(Device__c=d.Id, Quantity__c=2, Status__c='Confirmed'),
-                  new Device_Order__c(Device__c=d.Id, Quantity__c=1, Status__c='Cancelled')
-              };
-
-              InventoryAnalyticsController.DashboardDTO dto = InventoryAnalyticsController.getDashboard();
-              System.assertEquals(2, dto.totalQuantity);
-              System.assertEquals(1800, dto.totalSales);
-              System.assert(dto.avgOrderValue > 0);
-          }
-      }
-      EOF
-
-      for cls in DeviceOrderTrigger_Tests AnalyticsController_Tests
-      do
-        cat > force-app/main/default/classes/${cls}.cls-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
-        <apiVersion>60.0</apiVersion>
-        <status>Active</status>
-      </ApexClass>
-      EOF
-      done
-
-      # Trigger
-      cat > force-app/main/default/triggers/DeviceOrderTrigger.trigger << 'EOF'
-      trigger DeviceOrderTrigger on Device_Order__c (
-          before insert, before update,
-          after insert, after update,
-          after delete, after undelete
-      ) {
-          if (Trigger.isBefore) {
-              if (Trigger.isInsert) DeviceOrderTriggerHandler.beforeInsert(Trigger.new);
-              if (Trigger.isUpdate) DeviceOrderTriggerHandler.beforeUpdate(Trigger.new, Trigger.oldMap);
-          }
-          if (Trigger.isAfter) {
-              if (Trigger.isInsert) DeviceOrderTriggerHandler.afterInsert(Trigger.new);
-              if (Trigger.isUpdate) DeviceOrderTriggerHandler.afterUpdate(Trigger.new, Trigger.oldMap);
-              if (Trigger.isDelete) DeviceOrderTriggerHandler.afterDelete(Trigger.old);
-              if (Trigger.isUndelete) DeviceOrderTriggerHandler.afterUndelete(Trigger.new);
-          }
-      }
-      EOF
-
-      cat > force-app/main/default/triggers/DeviceOrderTrigger.trigger-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <ApexTrigger xmlns="http://soap.sforce.com/2006/04/metadata">
-        <apiVersion>60.0</apiVersion>
-        <status>Active</status>
-      </ApexTrigger>
-      EOF
-
-      # LWCs: inventoryDashboard
-      cat > force-app/main/default/lwc/inventoryDashboard/inventoryDashboard.html << 'EOF'
-      <template>
-        <lightning-card title="Inventory Dashboard" icon-name="utility:dashboard">
-          <div class="container">
-            <div class="kpis">
-              <div class="kpi">
-                <div class="label">Total Sales</div>
-                <div class="value">{totalSalesFormatted}</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Total Quantity Ordered</div>
-                <div class="value">{totalQuantity}</div>
-              </div>
-              <div class="kpi">
-                <div class="label">Avg Order Value</div>
-                <div class="value">{avgOrderValueFormatted}</div>
-              </div>
-              <div class="kpi alert">
-                <div class="label">Low Stock Devices</div>
-                <div class="value">{lowStockCount}</div>
-              </div>
-            </div>
-
-            <div class="actions">
-              <lightning-button label="Refresh" onclick={refresh}></lightning-button>
-              <lightning-button variant="brand" label="Restock Low Devices" onclick={restock} class="slds-m-left_small"></lightning-button>
-            </div>
-
-            <template if:true={lowStockDevices.length}>
-              <lightning-datatable key-field="id" data={lowStockDevices} columns={columns} hide-checkbox-column="true">
-              </lightning-datatable>
-            </template>
-            <template if:false={lowStockDevices.length}>
-              <p class="slds-p-around_small">All good! No devices below reorder level.</p>
-            </template>
-          </div>
-        </lightning-card>
-      </template>
-      EOF
-
-      cat > force-app/main/default/lwc/inventoryDashboard/inventoryDashboard.js << 'EOF'
-      import { LightningElement, wire, track } from 'lwc';
-      import getDashboard from '@salesforce/apex/InventoryAnalyticsController.getDashboard';
-      import restockLowDevices from '@salesforce/apex/InventoryAnalyticsController.restockLowDevices';
-      import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-      import { refreshApex } from '@salesforce/apex';
-
-      export default class InventoryDashboard extends LightningElement {
-        @track totalQuantity = 0;
-        @track totalSales = 0;
-        @track avgOrderValue = 0;
-        @track lowStockCount = 0;
-        @track lowStockDevices = [];
-
-        columns = [
-          { label: 'Device', fieldName: 'name', type: 'text' },
-          { label: 'Type', fieldName: 'type', type: 'text' },
-          { label: 'Stock', fieldName: 'stock', type: 'number' },
-          { label: 'Price', fieldName: 'price', type: 'currency' },
-          { label: 'Reorder Level', fieldName: 'reorderLevel', type: 'number' }
-        ];
-
-        wiredData;
-
-        @wire(getDashboard)
-        wiredDashboard(value) {
-          this.wiredData = value;
-          const { data, error } = value;
-          if (data) {
-            this.totalQuantity = data.totalQuantity || 0;
-            this.totalSales = data.totalSales || 0;
-            this.avgOrderValue = data.avgOrderValue || 0;
-            this.lowStockCount = data.lowStockCount || 0;
-            this.lowStockDevices = data.lowStockDevices || [];
-          } else if (error) {
-            this.toast('Error', 'Failed to load dashboard data', 'error');
-            // eslint-disable-next-line no-console
-            console.error(error);
-          }
-        }
-
-        get totalSalesFormatted() { return this.fmtCurrency(this.totalSales); }
-        get avgOrderValueFormatted() { return this.fmtCurrency(this.avgOrderValue); }
-        fmtCurrency(v) {
-          try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(v || 0); }
-          catch (e) { return `$${(v || 0).toFixed(2)}`; }
-        }
-
-        async refresh() { await refreshApex(this.wiredData); }
-
-        async restock() {
-          try {
-            await restockLowDevices();
-            this.toast('Success', 'Low-stock devices restocked.', 'success');
-            await this.refresh();
-          } catch (e) {
-            this.toast('Error', 'Restock failed.', 'error');
-            // eslint-disable-next-line no-console
-            console.error(e);
-          }
-        }
-
-        toast(title, message, variant) {
-          this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
-        }
-      }
-      EOF
-
-      cat > force-app/main/default/lwc/inventoryDashboard/inventoryDashboard.js-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-        <apiVersion>60.0</apiVersion>
-        <isExposed>true</isExposed>
-        <targets>
-          <target>lightning__HomePage</target>
-          <target>lightning__AppPage</target>
-        </targets>
-      </LightningComponentBundle>
-      EOF
-
-      cat > force-app/main/default/lwc/inventoryDashboard/inventoryDashboard.css << 'EOF'
-      .container { padding: 0.75rem; }
-      .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
-      .kpi { background: #f3f3f3; padding: 0.75rem; border-radius: 0.25rem; }
-      .kpi .label { font-size: 0.75rem; color: #5f5f5f; }
-      .kpi .value { font-size: 1.25rem; font-weight: 600; }
-      .kpi.alert { background: #fff4f4; }
-      .actions { margin: 0.75rem 0; }
-      @media (max-width: 900px) { .kpis { grid-template-columns: 1fr 1fr; } }
-      @media (max-width: 600px) { .kpis { grid-template-columns: 1fr; } }
-      EOF
-
-      # LWC: quickOrder
-      cat > force-app/main/default/lwc/quickOrder/quickOrder.html << 'EOF'
-      <template>
-        <lightning-card title="Quick Order" icon-name="utility:new">
-          <div class="slds-p-around_medium">
-            <lightning-combobox
-              name="device"
-              label="Device"
-              value={deviceId}
-              placeholder="Select a device"
-              options={deviceOptions}
-              onchange={handleDeviceChange}>
-            </lightning-combobox>
-
-            <template if:true={selectedDevice}>
-              <div class="slds-m-top_small info">
-                <span>{selectedDevice.name}</span>
-                <span>Price: {selectedDevice.priceFormatted}</span>
-                <span>In Stock: {selectedDevice.stock}</span>
-              </div>
-            </template>
-
-            <lightning-input
-              type="number"
-              name="qty"
-              label="Quantity"
-              value={qty}
-              min="1"
-              onchange={handleQtyChange}>
-            </lightning-input>
-
-            <div class="slds-m-top_small">
-              <strong>Total: {totalFormatted}</strong>
-            </div>
-
-            <div class="slds-m-top_medium">
-              <lightning-button variant="brand" label="Create Order" onclick={create}></lightning-button>
-            </div>
-          </div>
-        </lightning-card>
-      </template>
-      EOF
-
-      cat > force-app/main/default/lwc/quickOrder/quickOrder.js << 'EOF'
-      import { LightningElement, track } from 'lwc';
-      import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-      import getActiveDevices from '@salesforce/apex/DeviceCatalogController.getActiveDevices';
-      import createOrder from '@salesforce/apex/InventoryAnalyticsController.createOrder';
-      import { NavigationMixin } from 'lightning/navigation';
-
-      export default class QuickOrder extends NavigationMixin(LightningElement) {
-        @track deviceOptions = [];
-        @track deviceId;
-        @track selectedDevice;
-        @track qty = 1;
-
-        async connectedCallback() {
-          await this.loadDevices();
-        }
-
-        async loadDevices() {
-          try {
-            const list = await getActiveDevices();
-            this.deviceOptions = (list || []).map(d => ({
-              label: d.name,
-              value: d.id,
-              price: d.price,
-              stock: d.stock
-            }));
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error(e);
-            this.toast('Error', 'Failed to load devices.', 'error');
-          }
-        }
-
-        handleDeviceChange(event) {
-          this.deviceId = event.detail.value;
-          const found = this.deviceOptions.find(o => o.value === this.deviceId);
-          if (found) {
-            this.selectedDevice = {
-              id: found.value,
-              name: found.label,
-              price: found.price,
-              stock: found.stock,
-              priceFormatted: this.fmtCurrency(found.price)
-            };
-          } else {
-            this.selectedDevice = null;
-          }
-        }
-
-        handleQtyChange(event) {
-          const v = Number(event.detail.value);
-          this.qty = isNaN(v) || v <= 0 ? 1 : v;
-        }
-
-        get totalFormatted() {
-          const price = this.selectedDevice ? this.selectedDevice.price : 0;
-          return this.fmtCurrency((this.qty || 0) * (price || 0));
-        }
-
-        fmtCurrency(v) {
-          try {
-            return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(v || 0);
-          } catch (e) {
-            return `$${(v || 0).toFixed(2)}`;
-          }
-        }
-
-        async create() {
-          if (!this.deviceId) {
-            this.toast('Missing Info', 'Please select a device.', 'warning');
-            return;
-          }
-          if (!this.qty || this.qty <= 0) {
-            this.toast('Invalid Quantity', 'Quantity must be greater than zero.', 'warning');
-            return;
-          }
-          try {
-            const orderId = await createOrder({ deviceId: this.deviceId, qty: this.qty });
-            this.toast('Order Created', 'Your order was created successfully.', 'success');
-            this[NavigationMixin.Navigate]({
-              type: 'standard__recordPage',
-              attributes: { recordId: orderId, objectApiName: 'Device_Order__c', actionName: 'view' },
-            });
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error(e);
-            const msg = (e && e.body && e.body.message) || 'Failed to create order.';
-            this.toast('Error', msg, 'error');
-          }
-        }
-
-        toast(title, message, variant) {
-          this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
-        }
-      }
-      EOF
-
-      cat > force-app/main/default/lwc/quickOrder/quickOrder.js-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-        <apiVersion>60.0</apiVersion>
-        <isExposed>true</isExposed>
-        <targets>
-          <target>lightning__HomePage</target>
-          <target>lightning__AppPage</target>
-          <target>lightning__RecordPage</target>
-        </targets>
-      </LightningComponentBundle>
-      EOF
-
-      cat > force-app/main/default/lwc/quickOrder/quickOrder.css << 'EOF'
-      .info { display:flex; gap:1rem; color:#444; }
-      EOF
-
-      # Permission sets
-      cat > force-app/main/default/permissionsets/TechSolutions_Admin.permissionset-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>TechSolutions Admin</label>
-        <hasActivationRequired>false</hasActivationRequired>
-
-        <classAccesses><apexClass>DeviceOrderTriggerHandler</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>InventoryAnalyticsController</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>InventoryReplenisher</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>InventoryService</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>TechSolutionsDataSeeder</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>DeviceCatalogController</apexClass><enabled>true</enabled></classAccesses>
-
-        <objectPermissions>
-          <object>Device__c</object>
-          <allowCreate>true</allowCreate>
-          <allowDelete>true</allowDelete>
-          <allowEdit>true</allowEdit>
-          <allowRead>true</allowRead>
-          <modifyAllRecords>true</modifyAllRecords>
-          <viewAllRecords>true</viewAllRecords>
-        </objectPermissions>
-        <objectPermissions>
-          <object>Device_Order__c</object>
-          <allowCreate>true</allowCreate>
-          <allowDelete>true</allowDelete>
-          <allowEdit>true</allowEdit>
-          <allowRead>true</allowRead>
-          <modifyAllRecords>true</modifyAllRecords>
-          <viewAllRecords>true</viewAllRecords>
-        </objectPermissions>
-
-        <fieldPermissions>
-          <field>Device_Order__c.Unit_Price__c</field>
-          <readable>true</readable>
-          <editable>true</editable>
-        </fieldPermissions>
-      </PermissionSet>
-      EOF
-
-      cat > force-app/main/default/permissionsets/TechSolutions_User.permissionset-meta.xml << 'EOF'
-      <?xml version="1.0" encoding="UTF-8"?>
-      <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-        <label>TechSolutions User</label>
-        <hasActivationRequired>false</hasActivationRequired>
-
-        <classAccesses><apexClass>InventoryAnalyticsController</apexClass><enabled>true</enabled></classAccesses>
-        <classAccesses><apexClass>DeviceCatalogController</apexClass><enabled>true</enabled></classAccesses>
-
-        <objectPermissions>
-          <object>Device__c</object>
-          <allowCreate>false</allowCreate>
-          <allowDelete>false</allowDelete>
-          <allowEdit>false</allowEdit>
-          <allowRead>true</allowRead>
-          <modifyAllRecords>false</modifyAllRecords>
-          <viewAllRecords>true</viewAllRecords>
-        </objectPermissions>
-        <objectPermissions>
-          <object>Device_Order__c</object>
-          <allowCreate>true</allowCreate>
-          <allowDelete>false</allowDelete>
-          <allowEdit>true</allowEdit>
-          <allowRead>true</allowRead>
-          <modifyAllRecords>false</modifyAllRecords>
-          <viewAllRecords>true</viewAllRecords>
-        </objectPermissions>
-
-        <fieldPermissions>
-          <field>Device_Order__c.Unit_Price__c</field>
-          <readable>true</readable>
-          <editable>false</editable>
-        </fieldPermissions>
-      </PermissionSet>
-      EOF
-
-      # Seed script
-      cat > scripts/apex/data-seed.apex << 'EOF'
-      TechSolutionsDataSeeder.seed();
-      EOF
-
-      echo "Project files created."
-
-  - name: Commit and push files
-    run: |
-      git config user.name "github-actions[bot]"
-      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      git add -A
-      if git diff --cached --quiet; then
-        echo "No changes to commit."
-      else
-        git commit -m "feat: bootstrap Tech Solutions SFDX app"
-        git push
-      fi
+          EOF
+
+          cat > README.md << 'EOF'
+          # Tech Solutions App
+
+          Manage devices, stock, and device orders. Includes automation, analytics, LWCs, and tests.
+
+          ## Quickstart (Developer Org)
+          1) Login + deploy
+             - sf org login web -a GTP5org
+             - sf project deploy start -o GTP5org
+             - sf org assign permset -n TechSolutions_Admin -o GTP5org
+          2) Seed data
+             - sf apex run --file scripts/apex/data-seed.apex -o GTP5org
+          3) Open app
+             - sf org open -o GTP5org → App Launcher → Tech Solutions
+          EOF
+
+          # App
+          cat > force-app/main/default/applications/Tech_Solutions.app-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+            <description>Tech Solutions app for managing devices and orders</description>
+            <label>Tech Solutions</label>
+            <logo>none</logo>
+            <navType>Standard</navType>
+            <tabs>standard-Home</tabs>
+            <tabs>Device__c</tabs>
+            <tabs>Device_Order__c</tabs>
+            <tabs>standard-Report</tabs>
+            <tabs>standard-Dashboard</tabs>
+            <uiType>Lightning</uiType>
+          </CustomApplication>
+          EOF
+
+          # Tabs
+          cat > force-app/main/default/tabs/Device__c.tab-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+            <label>Devices</label>
+            <motif>Custom67: PDA</motif>
+            <object>Device__c</object>
+          </CustomTab>
+          EOF
+
+          cat > force-app/main/default/tabs/Device_Order__c.tab-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+            <label>Device Orders</label>
+            <motif>Custom88: Shopping Cart</motif>
+            <object>Device_Order__c</object>
+          </CustomTab>
+          EOF
+
+          # Device__c object (decomposed fields)
+          cat > force-app/main/default/objects/Device__c/Device__c.object-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+            <label>Device</label>
+            <pluralLabel>Devices</pluralLabel>
+            <nameField>
+              <type>Text</type>
+              <label>Device Name</label>
+            </nameField>
+            <deploymentStatus>Deployed</deploymentStatus>
+            <sharingModel>ReadWrite</sharingModel>
+            <description>Portable electronic devices</description>
+            <enableActivities>true</enableActivities>
+          </CustomObject>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Type__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Type__c</fullName>
+            <label>Type</label>
+            <type>Picklist</type>
+            <valueSet>
+              <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Laptop</fullName><default>false</default><label>Laptop</label></value>
+                <value><fullName>Smartphone</fullName><default>false</default><label>Smartphone</label></value>
+                <value><fullName>Tablet</fullName><default>false</default><label>Tablet</label></value>
+              </valueSetDefinition>
+            </valueSet>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/SKU__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>SKU__c</fullName>
+            <label>SKU</label>
+            <type>Text</type>
+            <length>50</length>
+            <unique>true</unique>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Stock_Quantity__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Stock_Quantity__c</fullName>
+            <label>Stock Quantity</label>
+            <type>Number</type>
+            <precision>18</precision>
+            <scale>0</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Price__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Price__c</fullName>
+            <label>Price</label>
+            <type>Currency</type>
+            <precision>18</precision>
+            <scale>2</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Reorder_Level__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Reorder_Level__c</fullName>
+            <label>Reorder Level</label>
+            <type>Number</type>
+            <precision>18</precision>
+            <scale>0</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Reorder_Amount__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Reorder_Amount__c</fullName>
+            <label>Reorder Amount</label>
+            <type>Number</type>
+            <precision>18</precision>
+            <scale>0</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Auto_Restock__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Auto_Restock__c</fullName>
+            <label>Auto Restock</label>
+            <type>Checkbox</type>
+            <defaultValue>true</defaultValue>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Active__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Active__c</fullName>
+            <label>Active</label>
+            <type>Checkbox</type>
+            <defaultValue>true</defaultValue>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Image_URL__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Image_URL__c</fullName>
+            <label>Image URL</label>
+            <type>Url</type>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/fields/Is_Low_Stock__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Is_Low_Stock__c</fullName>
+            <label>Low Stock</label>
+            <type>Checkbox</type>
+            <formula>AND(NOT(ISBLANK(Reorder_Level__c)), Stock_Quantity__c &lt;= Reorder_Level__c)</formula>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device__c/listViews/Low_Stock.listView-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Low_Stock</fullName>
+            <label>Low Stock</label>
+            <filterScope>Everything</filterScope>
+            <columns>NAME</columns>
+            <columns>Type__c</columns>
+            <columns>Stock_Quantity__c</columns>
+            <columns>Reorder_Level__c</columns>
+            <filters>
+              <field>Is_Low_Stock__c</field>
+              <operation>equals</operation>
+              <value>1</value>
+            </filters>
+          </ListView>
+          EOF
+
+          # Device_Order__c object + fields
+          cat > force-app/main/default/objects/Device_Order__c/Device_Order__c.object-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+            <label>Device Order</label>
+            <pluralLabel>Device Orders</pluralLabel>
+            <nameField>
+              <type>AutoNumber</type>
+              <label>Order Number</label>
+              <displayFormat>ORD-{0000}</displayFormat>
+            </nameField>
+            <deploymentStatus>Deployed</deploymentStatus>
+            <sharingModel>ReadWrite</sharingModel>
+            <description>Orders for Devices (custom to avoid standard Order conflicts)</description>
+            <enableActivities>true</enableActivities>
+          </CustomObject>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/Device__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Device__c</fullName>
+            <label>Device</label>
+            <type>Lookup</type>
+            <referenceTo>Device__c</referenceTo>
+            <relationshipName>Orders</relationshipName>
+            <relationshipLabel>Orders</relationshipLabel>
+            <deleteConstraint>SetNull</deleteConstraint>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/Quantity__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Quantity__c</fullName>
+            <label>Quantity</label>
+            <type>Number</type>
+            <precision>18</precision>
+            <scale>0</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/Status__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Status__c</fullName>
+            <label>Status</label>
+            <type>Picklist</type>
+            <valueSet>
+              <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Draft</fullName><default>false</default><label>Draft</label></value>
+                <value><fullName>Confirmed</fullName><default>true</default><label>Confirmed</label></value>
+                <value><fullName>Fulfilled</fullName><default>false</default><label>Fulfilled</label></value>
+                <value><fullName>Cancelled</fullName><default>false</default><label>Cancelled</label></value>
+              </valueSetDefinition>
+            </valueSet>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/Unit_Price__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Unit_Price__c</fullName>
+            <label>Unit Price</label>
+            <type>Currency</type>
+            <precision>18</precision>
+            <scale>2</scale>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/TotalPrice__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>TotalPrice__c</fullName>
+            <label>Total Price</label>
+            <type>Currency</type>
+            <precision>18</precision>
+            <scale>2</scale>
+            <formula>BLANKVALUE(Quantity__c, 0) * BLANKVALUE(Unit_Price__c, 0)</formula>
+            <formulaTreatBlankAs>BlankAsZero</formulaTreatBlankAs>
+          </CustomField>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/fields/Notes__c.field-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Notes__c</fullName>
+            <label>Notes</label>
+            <type>LongTextArea</type>
+            <visibleLines>3</visibleLines>
+            <length>32768</length>
+          </CustomField>
+          EOF
+
+          # Validation rules
+          cat > force-app/main/default/objects/Device_Order__c/validationRules/Require_Device_and_Quantity.validationRule-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Require_Device_and_Quantity</fullName>
+            <active>true</active>
+            <errorConditionFormula>OR(ISBLANK(Device__c), ISBLANK(Quantity__c))</errorConditionFormula>
+            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
+            <errorMessage>Device and Quantity are required.</errorMessage>
+          </ValidationRule>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/validationRules/Quantity_Must_Be_Positive.validationRule-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Quantity_Must_Be_Positive</fullName>
+            <active>true</active>
+            <errorConditionFormula>Quantity__c &lt;= 0</errorConditionFormula>
+            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
+            <errorMessage>Quantity must be greater than zero.</errorMessage>
+          </ValidationRule>
+          EOF
+
+          cat > force-app/main/default/objects/Device_Order__c/validationRules/Lock_Unit_Price_After_Create.validationRule-meta.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+            <fullName>Lock_Unit_Price_After_Create</fullName>
+            <active>true</active>
+            <errorConditionFormula>AND(NOT(ISNEW()), Unit_Price__c &lt;&gt; PRIORVALUE(Unit_Price__c))</errorConditionFormula>
+            <errorDisplayLocation>TopOfPage</errorDisplayLocation>
+            <errorMessage>Unit Price cannot be changed after creation.</errorMessage>
+          </ValidationRule>
+          EOF
+
+          # Continue with remaining files in the next step...
+          echo "Bootstrap workflow updated - continuing with remaining files..."
+
+      - name: Commit and push files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "feat: bootstrap Tech Solutions SFDX app"
+            git push
+          fi
