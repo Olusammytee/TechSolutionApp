@@ -2,5 +2,5 @@
 <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
   <label>Device Orders</label>
   <motif>Custom88: Shopping Cart</motif>
-  <object>Device_Order__c</object>
+  <customObject>true</customObject>
 </CustomTab>

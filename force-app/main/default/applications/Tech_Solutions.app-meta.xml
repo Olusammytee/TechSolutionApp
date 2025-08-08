@@ -8,4 +8,5 @@
   <tabs>Device__c</tabs>
   <tabs>Device_Order__c</tabs>
   <uiType>Lightning</uiType>
+  <formFactors>Large</formFactors>
 </CustomApplication>
