@@ -1,0 +1,8 @@
+.sfdx/
+.sf/
+.vscode/
+node_modules/
+coverage/
+test-results/
+package-lock.json
+yarn.lock

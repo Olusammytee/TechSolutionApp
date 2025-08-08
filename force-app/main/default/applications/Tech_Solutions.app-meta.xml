@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+  <description>Tech Solutions app for managing devices and orders</description>
+  <label>Tech Solutions</label>
+  <logo>none</logo>
+  <navType>Standard</navType>
+  <tabs>standard-Home</tabs>
+  <tabs>Device__c</tabs>
+  <tabs>Device_Order__c</tabs>
+  <uiType>Lightning</uiType>
+</CustomApplication>

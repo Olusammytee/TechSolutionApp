@@ -1,0 +1,8 @@
+{
+  "orgName": "Tech Solutions Inc",
+  "edition": "Developer",
+  "hasSampleData": false,
+  "settings": {
+    "lightningExperienceSettings": { "enableS1DesktopEnabled": true }
+  }
+}
