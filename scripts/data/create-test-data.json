@@ -1,0 +1,64 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device1"
+      },
+      "Name": "Laptop Pro 15",
+      "Type__c": "Computer",
+      "Stock_Quantity__c": 25,
+      "Price__c": 1299.99
+    },
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device2"
+      },
+      "Name": "Desktop Workstation",
+      "Type__c": "Computer",
+      "Stock_Quantity__c": 15,
+      "Price__c": 899.99
+    },
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device3"
+      },
+      "Name": "Wireless Mouse",
+      "Type__c": "Accessory",
+      "Stock_Quantity__c": 100,
+      "Price__c": 29.99
+    },
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device4"
+      },
+      "Name": "USB Keyboard",
+      "Type__c": "Accessory",
+      "Stock_Quantity__c": 75,
+      "Price__c": 49.99
+    },
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device5"
+      },
+      "Name": "Network Router",
+      "Type__c": "Networking",
+      "Stock_Quantity__c": 8,
+      "Price__c": 199.99
+    },
+    {
+      "attributes": {
+        "type": "Device__c",
+        "referenceId": "Device6"
+      },
+      "Name": "External Monitor",
+      "Type__c": "Computer",
+      "Stock_Quantity__c": 5,
+      "Price__c": 299.99
+    }
+  ]
+}
