@@ -22,10 +22,6 @@ trigger OrderTrigger on Device_Order__c (before insert, before update, after ins
     // Educational Note: Using trigger handler pattern for separation of concerns
     // This approach makes code more maintainable, testable, and follows enterprise best practices
     
-    // Educational Note: Temporarily commented out for deployment
-    // Will be activated after handler class is deployed
-
-    /*
     if (Trigger.isBefore) {
         if (Trigger.isInsert || Trigger.isUpdate) {
             // Before Insert/Update: Calculate totals and validate data
@@ -54,5 +50,4 @@ trigger OrderTrigger on Device_Order__c (before insert, before update, after ins
             OrderTriggerHandler.updateStockStatus(Trigger.new);
         }
     }
-    */
 }
