@@ -1,62 +1,368 @@
 <!--
-  OrderDashboardMinimal - Minimal Lightning Web Component Template
-  
-  Educational Purpose: Demonstrates basic LWC template patterns
-  This minimal template provides essential dashboard UI elements
-  
-  Part of: TechSolutionApp Phase 4.2 - Deployment Optimization
+  OrderDashboardMinimal - Enhanced Analytics Dashboard Template
+
+  Educational Purpose: Demonstrates advanced dashboard features with comprehensive UI
+  This enhanced template provides interactive charts, filtering, and real-time updates
+
+  Part of: TechSolutionApp Phase 4.3 - Advanced Dashboard Features
   Author: TechSolutionApp Educational Platform
   Created: August 2024
+  Enhanced: August 2024 - Phase 4.3 Implementation
+
+  Features:
+  - Tabbed interface for organized content
+  - Interactive charts and visualizations
+  - Advanced filtering and search
+  - Real-time refresh controls
+  - Responsive design with mobile optimization
 -->
 <template>
-    <lightning-card title="Order Dashboard - Minimal" icon-name="standard:orders">
+    <lightning-card title="Advanced Order Analytics Dashboard" icon-name="standard:orders" class="dashboard-card">
         
+        <!-- Dashboard Header with Controls -->
+        <div slot="actions">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <!-- Manual Refresh Button -->
+                <div class="slds-col">
+                    <lightning-button
+                        label="Refresh"
+                        icon-name="utility:refresh"
+                        onclick={handleManualRefresh}
+                        disabled={isLoading}
+                        variant="neutral">
+                    </lightning-button>
+                </div>
+
+                <!-- Auto Refresh Toggle -->
+                <div class="slds-col">
+                    <lightning-input
+                        type="toggle"
+                        label="Auto Refresh"
+                        checked={autoRefreshEnabled}
+                        onchange={handleAutoRefreshToggle}>
+                    </lightning-input>
+                </div>
+
+                <!-- Refresh Interval Selector -->
+                <div class="slds-col" if:true={autoRefreshEnabled}>
+                    <lightning-combobox
+                        label="Interval"
+                        value={refreshInterval}
+                        options={refreshIntervalOptions}
+                        onchange={handleRefreshIntervalChange}
+                        variant="label-hidden">
+                    </lightning-combobox>
+                </div>
+
+                <!-- Toggle Charts Button -->
+                <div class="slds-col">
+                    <lightning-button
+                        label="Toggle Charts"
+                        icon-name="utility:chart"
+                        onclick={handleToggleCharts}
+                        variant="neutral">
+                    </lightning-button>
+                </div>
+
+                <!-- Toggle Filters Button -->
+                <div class="slds-col">
+                    <lightning-button
+                        label="Toggle Filters"
+                        icon-name="utility:filterList"
+                        onclick={handleToggleFilters}
+                        variant="neutral">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
         <!-- Loading Spinner -->
         <template if:true={isLoading}>
             <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
         </template>
 
         <!-- Main Dashboard Content -->
-        <div class="slds-p-around_medium">
+        <div class="slds-p-around_medium dashboard-content">
             
-            <!-- Statistics Cards -->
-            <div class="slds-grid slds-wrap slds-gutters">
-                
-                <!-- Order Count Card -->
-                <div class="slds-col slds-size_1-of-2">
-                    <div class="slds-box slds-theme_default">
-                        <div class="slds-text-heading_medium slds-text-align_center">
-                            {orderCount}
-                        </div>
-                        <div class="slds-text-body_regular slds-text-align_center">
-                            Total Orders
-                        </div>
-                    </div>
-                </div>
+            <!-- Tabbed Interface -->
+            <lightning-tabset active-tab-value={activeTab} onactive={handleTabChange}>
 
-                <!-- Device Count Card -->
-                <div class="slds-col slds-size_1-of-2">
-                    <div class="slds-box slds-theme_default">
-                        <div class="slds-text-heading_medium slds-text-align_center">
-                            {deviceCount}
-                        </div>
-                        <div class="slds-text-body_regular slds-text-align_center">
-                            Available Devices
-                        </div>
-                    </div>
-                </div>
+                <!-- Overview Tab -->
+                <lightning-tab label="Overview" value="overview">
 
-            </div>
+                    <!-- Enhanced Statistics Cards -->
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+
+                        <!-- Total Orders Card -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-theme_default metric-card">
+                                <div class="slds-text-heading_large slds-text-align_center metric-value">
+                                    {dashboardMetrics.totalOrders}
+                                </div>
+                                <div class="slds-text-body_regular slds-text-align_center metric-label">
+                                    Total Orders
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Revenue Card -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-theme_default metric-card">
+                                <div class="slds-text-heading_large slds-text-align_center metric-value">
+                                    ${dashboardMetrics.totalRevenue}
+                                </div>
+                                <div class="slds-text-body_regular slds-text-align_center metric-label">
+                                    Total Revenue
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Average Order Value Card -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-theme_default metric-card">
+                                <div class="slds-text-heading_large slds-text-align_center metric-value">
+                                    ${dashboardMetrics.avgOrderValue}
+                                </div>
+                                <div class="slds-text-body_regular slds-text-align_center metric-label">
+                                    Avg Order Value
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders Card -->
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                            <div class="slds-box slds-theme_default metric-card">
+                                <div class="slds-text-heading_large slds-text-align_center metric-value">
+                                    {dashboardMetrics.recentOrders}
+                                </div>
+                                <div class="slds-text-body_regular slds-text-align_center metric-label">
+                                    Recent Orders (7 days)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Stock Status Summary -->
+                    <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+
+                        <div class="slds-col slds-size_1-of-1">
+                            <div class="slds-box slds-theme_default">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">Stock Status Summary</h3>
+
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <!-- In Stock -->
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="stock-indicator stock-in">
+                                            <div class="stock-count">{dashboardMetrics.inStockDevices}</div>
+                                            <div class="stock-label">In Stock</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Low Stock -->
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="stock-indicator stock-low">
+                                            <div class="stock-count">{dashboardMetrics.lowStockDevices}</div>
+                                            <div class="stock-label">Low Stock</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Out of Stock -->
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="stock-indicator stock-out">
+                                            <div class="stock-count">{dashboardMetrics.outOfStockDevices}</div>
+                                            <div class="stock-label">Out of Stock</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </lightning-tab>
+
+                <!-- Charts Tab -->
+                <lightning-tab label="Charts" value="charts">
+
+                    <template if:true={showCharts}>
+
+                        <!-- Chart Type Selector -->
+                        <div class="slds-m-bottom_medium">
+                            <lightning-combobox
+                                label="Chart Type"
+                                value={chartType}
+                                options={chartTypeOptions}
+                                onchange={handleChartTypeChange}>
+                            </lightning-combobox>
+                        </div>
+
+                        <!-- Order Trend Chart -->
+                        <div class="slds-box slds-m-bottom_medium" if:true={hasOrderTrendData}>
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Order Trends Over Time</h3>
+                            <div class="chart-container">
+                                <template for:each={orderTrendData} for:item="dataPoint">
+                                    <div key={dataPoint.label} class="chart-bar">
+                                        <div class="bar-label">{dataPoint.label}</div>
+                                        <div class="bar-value">{dataPoint.value} orders</div>
+                                        <div class="bar-revenue">${dataPoint.revenue}</div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Device Popularity Chart -->
+                        <div class="slds-box slds-m-bottom_medium" if:true={hasDevicePopularityData}>
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Device Popularity</h3>
+                            <div class="chart-container">
+                                <template for:each={devicePopularityData} for:item="dataPoint">
+                                    <div key={dataPoint.label} class="chart-bar">
+                                        <div class="bar-label">{dataPoint.label}</div>
+                                        <div class="bar-value">{dataPoint.value} orders</div>
+                                        <div class="bar-quantity">{dataPoint.quantity} units</div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                    </template>
+
+                    <template if:false={showCharts}>
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <p>Charts are hidden. Click "Toggle Charts" to show visualizations.</p>
+                        </div>
+                    </template>
+
+                </lightning-tab>
+
+                <!-- Orders Tab -->
+                <lightning-tab label="Orders" value="orders">
+
+                    <!-- Advanced Filters -->
+                    <template if:true={showFilters}>
+                        <div class="slds-box slds-m-bottom_medium filter-panel">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Advanced Filters</h3>
+
+                            <div class="slds-grid slds-wrap slds-gutters">
+
+                                <!-- Search Term -->
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <lightning-input
+                                        label="Search"
+                                        value={searchTerm}
+                                        onchange={handleSearchChange}
+                                        placeholder="Search orders...">
+                                    </lightning-input>
+                                </div>
+
+                                <!-- Device Filter -->
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <lightning-combobox
+                                        label="Device"
+                                        value={selectedDeviceFilter}
+                                        options={deviceFilterOptions}
+                                        onchange={handleDeviceFilterChange}>
+                                    </lightning-combobox>
+                                </div>
+
+                                <!-- Date From -->
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <lightning-input
+                                        type="date"
+                                        label="From Date"
+                                        value={dateFromFilter}
+                                        onchange={handleDateFromChange}>
+                                    </lightning-input>
+                                </div>
+
+                                <!-- Date To -->
+                                <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-4">
+                                    <lightning-input
+                                        type="date"
+                                        label="To Date"
+                                        value={dateToFilter}
+                                        onchange={handleDateToChange}>
+                                    </lightning-input>
+                                </div>
+
+                            </div>
+
+                            <div class="slds-grid slds-gutters slds-m-top_small">
+
+                                <!-- Order Limit -->
+                                <div class="slds-col slds-size_1-of-2">
+                                    <lightning-input
+                                        type="number"
+                                        label="Max Results"
+                                        value={orderLimit}
+                                        onchange={handleLimitChange}
+                                        min="1"
+                                        max="200">
+                                    </lightning-input>
+                                </div>
+
+                                <!-- Clear Filters Button -->
+                                <div class="slds-col slds-size_1-of-2 slds-align-bottom">
+                                    <lightning-button
+                                        label="Clear Filters"
+                                        onclick={handleClearFilters}
+                                        variant="neutral">
+                                    </lightning-button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Orders Table -->
+                    <template if:true={hasFilteredOrders}>
+                        <div class="slds-box">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Filtered Orders</h3>
+
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="slds-text-title_caps" scope="col">Device</th>
+                                        <th class="slds-text-title_caps" scope="col">Quantity</th>
+                                        <th class="slds-text-title_caps" scope="col">Total Price</th>
+                                        <th class="slds-text-title_caps" scope="col">Order Date</th>
+                                        <th class="slds-text-title_caps" scope="col">Confirmation #</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={filteredOrders} for:item="order">
+                                        <tr key={order.id} class="slds-hint-parent">
+                                            <td data-label="Device">{order.deviceName}</td>
+                                            <td data-label="Quantity">{order.quantity}</td>
+                                            <td data-label="Total Price">${order.totalPrice}</td>
+                                            <td data-label="Order Date">{order.orderDate}</td>
+                                            <td data-label="Confirmation #">{order.confirmationNumber}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template if:false={hasFilteredOrders}>
+                        <div class="slds-text-align_center slds-p-around_large">
+                            <p>No orders found matching the current filters.</p>
+                        </div>
+                    </template>
+
+                </lightning-tab>
+
+            </lightning-tabset>
 
             <!-- Test Connection Section -->
             <div class="slds-m-top_medium">
-                <lightning-button 
-                    label="Test Connection" 
+                <lightning-button
+                    label="Test Connection"
                     onclick={handleTestConnection}
                     variant="brand"
                     disabled={isLoading}>
                 </lightning-button>
-                
+
                 <template if:true={connectionStatus}>
                     <div class="slds-m-top_small slds-text-color_success">
                         {connectionStatus}

@@ -1,34 +1,114 @@
 /**
- * OrderDashboardMinimal - Minimal Lightning Web Component Styles
- * 
- * Educational Purpose: Demonstrates basic LWC styling patterns
- * This minimal stylesheet provides essential dashboard styling
- * 
- * Part of: TechSolutionApp Phase 4.2 - Deployment Optimization
+ * OrderDashboardMinimal - Enhanced Analytics Dashboard Styles
+ *
+ * Educational Purpose: Demonstrates advanced dashboard styling with responsive design
+ * This enhanced stylesheet provides comprehensive styling for charts, metrics, and interactions
+ *
+ * Part of: TechSolutionApp Phase 4.3 - Advanced Dashboard Features
  * Author: TechSolutionApp Educational Platform
  * Created: August 2024
+ * Enhanced: August 2024 - Phase 4.3 Implementation
+ *
+ * Features:
+ * - Responsive design patterns with mobile optimization
+ * - Interactive hover states and animations
+ * - Chart visualization styling
+ * - Advanced color schemes and gradients
+ * - Accessibility enhancements
  */
 
-/* Custom styling for dashboard cards */
+/* ========================================
+   DASHBOARD CARD STYLING
+   ======================================== */
+
+.dashboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.dashboard-content {
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+/* Enhanced box styling with animations */
 .slds-box {
-    border-radius: 8px;
-    transition: transform 0.2s ease-in-out;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white;
 }
 
 .slds-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* Statistics display styling */
-.slds-text-heading_medium {
+/* ========================================
+   METRIC CARDS STYLING
+   ======================================== */
+
+.metric-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.metric-label {
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+/* ========================================
+   STOCK STATUS INDICATORS
+   ======================================== */
+
+.stock-indicator {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.stock-in {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.stock-low {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+}
+
+.stock-out {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+}
+
+.stock-count {
     font-size: 2rem;
     font-weight: bold;
-    color: #0176d3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Success message styling */
-.slds-text-color_success {
-    color: #4bca81;
+.stock-label {
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
 }

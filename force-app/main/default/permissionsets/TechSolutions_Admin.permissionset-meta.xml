@@ -3,6 +3,23 @@
   <label>TechSolutions Admin</label>
   <hasActivationRequired>false</hasActivationRequired>
 
+  <!-- Application Visibility - CRITICAL FOR APP LAUNCHER -->
+  <applicationVisibilities>
+    <application>Tech_Solutions</application>
+    <visible>true</visible>
+  </applicationVisibilities>
+
+  <!-- Tab Settings - CRITICAL FOR TAB ACCESS -->
+  <tabSettings>
+    <tab>Device__c</tab>
+    <visibility>Visible</visibility>
+  </tabSettings>
+  <tabSettings>
+    <tab>Device_Order__c</tab>
+    <visibility>Visible</visibility>
+  </tabSettings>
+
+  <!-- Object Permissions -->
   <objectPermissions>
     <object>Device__c</object>
     <allowCreate>true</allowCreate>
@@ -21,4 +38,54 @@
     <modifyAllRecords>true</modifyAllRecords>
     <viewAllRecords>true</viewAllRecords>
   </objectPermissions>
+
+  <!-- Field Permissions for Device__c Custom Fields -->
+  <fieldPermissions>
+    <field>Device__c.Minimum_Stock_Level__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Reorder_Point__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Last_Restocked__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Stock_Status__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+
+  <!-- Field Permissions for Device_Order__c Custom Fields -->
+  <fieldPermissions>
+    <field>Device_Order__c.Total_Price__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Order_Date__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Confirmation_Number__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+
+  <!-- Apex Class Permissions -->
+  <classAccesses>
+    <apexClass>OrderDashboardMinimal</apexClass>
+    <enabled>true</enabled>
+  </classAccesses>
+  <classAccesses>
+    <apexClass>OrderTriggerHandler</apexClass>
+    <enabled>true</enabled>
+  </classAccesses>
+
 </PermissionSet>
