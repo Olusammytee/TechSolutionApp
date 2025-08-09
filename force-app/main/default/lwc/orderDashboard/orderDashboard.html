@@ -1,0 +1,299 @@
+<!--
+    Order Dashboard Lightning Web Component Template
+    
+    Educational Purpose: Demonstrates comprehensive LWC HTML patterns
+    This template showcases modern Lightning Design System (SLDS) usage:
+    - Responsive grid layouts
+    - Interactive data tables
+    - Real-time status indicators
+    - Modal forms and user interactions
+    - Conditional rendering patterns
+    
+    Key Learning Concepts:
+    - SLDS grid system and responsive design
+    - Lightning base components integration
+    - Conditional rendering with if:true/if:false
+    - Event handling and data binding
+    - Accessibility best practices
+    - Professional UI/UX patterns
+    
+    Part of: TechSolutionApp Phase 4.1 - Interactive Learning Components
+    Author: TechSolutionApp Educational Platform
+    Created: August 2024
+-->
+
+<template>
+    <!-- Educational Note: Main dashboard container with SLDS styling -->
+    <div class="slds-card slds-p-around_medium">
+        
+        <!-- Dashboard Header -->
+        <div class="slds-card__header slds-grid slds-grid_align-spread">
+            <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:dashboard" size="medium"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title slds-text-heading_medium">
+                        Order Processing Dashboard
+                    </h2>
+                    <p class="slds-text-body_small slds-text-color_weak">
+                        Real-time order management and stock monitoring
+                    </p>
+                </div>
+            </div>
+            <div class="slds-no-flex">
+                <lightning-button-group>
+                    <lightning-button 
+                        label="Refresh Data" 
+                        icon-name="utility:refresh"
+                        onclick={handleRefresh}
+                        disabled={isLoading}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Create Order" 
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={showCreateOrderForm}>
+                    </lightning-button>
+                </lightning-button-group>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div if:true={isLoading} class="slds-is-relative slds-p-around_medium">
+            <lightning-spinner alternative-text="Loading dashboard data..." size="medium"></lightning-spinner>
+        </div>
+
+        <!-- Error Message -->
+        <div if:true={error} class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error">
+            <span class="slds-assistive-text">Error</span>
+            <h2>Dashboard Error: {error.body.message}</h2>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div if:false={isLoading} class="slds-card__body">
+            
+            <!-- Stock Summary Cards -->
+            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_large">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                    <div class="slds-box slds-text-align_center slds-theme_shade">
+                        <div class="slds-text-heading_large slds-text-color_success">{stockSummary.totalDevices}</div>
+                        <div class="slds-text-body_small">Total Devices</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                    <div class="slds-box slds-text-align_center slds-theme_success">
+                        <div class="slds-text-heading_large">{stockSummary.inStock}</div>
+                        <div class="slds-text-body_small">In Stock</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                    <div class="slds-box slds-text-align_center slds-theme_warning">
+                        <div class="slds-text-heading_large">{stockSummary.lowStock}</div>
+                        <div class="slds-text-body_small">Low Stock</div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                    <div class="slds-box slds-text-align_center slds-theme_error">
+                        <div class="slds-text-heading_large">{stockSummary.outOfStock}</div>
+                        <div class="slds-text-body_small">Out of Stock</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls and Filters -->
+            <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-combobox
+                        name="statusFilter"
+                        label="Filter by Status"
+                        value={selectedStatusFilter}
+                        placeholder="Select Status"
+                        options={statusOptions}
+                        onchange={handleStatusFilterChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input
+                        type="number"
+                        name="orderLimit"
+                        label="Orders to Display"
+                        value={orderLimit}
+                        min="5"
+                        max="50"
+                        onchange={handleOrderLimitChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input
+                        type="number"
+                        name="trendDays"
+                        label="Trend Analysis Days"
+                        value={trendDays}
+                        min="7"
+                        max="90"
+                        onchange={handleTrendDaysChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <!-- Recent Orders Table -->
+            <div class="slds-card slds-m-bottom_large">
+                <div class="slds-card__header">
+                    <h3 class="slds-card__header-title slds-text-heading_small">
+                        Recent Orders ({filteredOrders.length})
+                    </h3>
+                </div>
+                <div class="slds-card__body">
+                    <div if:true={filteredOrders.length} class="slds-scrollable_x">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">Order #</th>
+                                    <th class="slds-text-title_caps" scope="col">Device</th>
+                                    <th class="slds-text-title_caps" scope="col">Quantity</th>
+                                    <th class="slds-text-title_caps" scope="col">Total Price</th>
+                                    <th class="slds-text-title_caps" scope="col">Status</th>
+                                    <th class="slds-text-title_caps" scope="col">Stock Status</th>
+                                    <th class="slds-text-title_caps" scope="col">Confirmation</th>
+                                    <th class="slds-text-title_caps" scope="col">Order Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={filteredOrders} for:item="order">
+                                    <tr key={order.id} class="slds-hint-parent">
+                                        <td data-label="Order #">
+                                            <div class="slds-truncate" title={order.name}>{order.name}</div>
+                                        </td>
+                                        <td data-label="Device">
+                                            <div class="slds-truncate" title={order.deviceName}>{order.deviceName}</div>
+                                        </td>
+                                        <td data-label="Quantity">
+                                            <div class="slds-truncate">{order.quantity}</div>
+                                        </td>
+                                        <td data-label="Total Price">
+                                            <div class="slds-truncate">
+                                                <lightning-formatted-number 
+                                                    value={order.totalPrice} 
+                                                    format-style="currency"
+                                                    currency-code="USD">
+                                                </lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                        <td data-label="Status">
+                                            <lightning-badge label={order.status} variant="inverse"></lightning-badge>
+                                        </td>
+                                        <td data-label="Stock Status">
+                                            <lightning-badge 
+                                                label={order.stockStatus}
+                                                variant={order.stockStatus}>
+                                            </lightning-badge>
+                                        </td>
+                                        <td data-label="Confirmation">
+                                            <div class="slds-truncate" title={order.confirmationNumber}>
+                                                {order.confirmationNumber}
+                                            </div>
+                                        </td>
+                                        <td data-label="Order Date">
+                                            <lightning-formatted-date-time 
+                                                value={order.orderDate}
+                                                year="numeric"
+                                                month="short"
+                                                day="2-digit">
+                                            </lightning-formatted-date-time>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div if:false={filteredOrders.length} class="slds-text-align_center slds-p-around_large">
+                        <lightning-icon icon-name="utility:info" size="large" class="slds-m-bottom_small"></lightning-icon>
+                        <p class="slds-text-heading_small">No orders found</p>
+                        <p class="slds-text-body_regular">Try adjusting your filters or create a new order</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Trends Chart Placeholder -->
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h3 class="slds-card__header-title slds-text-heading_small">
+                        Order Trends (Last {trendDays} Days)
+                    </h3>
+                </div>
+                <div class="slds-card__body slds-text-align_center slds-p-around_large">
+                    <lightning-icon icon-name="utility:chart" size="large" class="slds-m-bottom_small"></lightning-icon>
+                    <p class="slds-text-heading_small">Chart Visualization</p>
+                    <p class="slds-text-body_regular">
+                        Chart component will be implemented in next iteration
+                    </p>
+                    <div class="slds-m-top_medium">
+                        <template for:each={orderTrends} for:item="trend">
+                            <div key={trend.orderDate} class="slds-box slds-box_x-small slds-m-bottom_x-small">
+                                <lightning-formatted-date-time value={trend.orderDate}></lightning-formatted-date-time>:
+                                {trend.orderCount} orders, 
+                                <lightning-formatted-number 
+                                    value={trend.totalRevenue} 
+                                    format-style="currency"
+                                    currency-code="USD">
+                                </lightning-formatted-number> revenue
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Order Modal -->
+    <template if:true={showOrderForm}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" onclick={hideCreateOrderForm}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Create New Order</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form slds-form_stacked">
+                        <lightning-combobox
+                            name="device"
+                            label="Select Device"
+                            value={selectedDeviceId}
+                            placeholder="Choose a device"
+                            options={deviceOptions}
+                            onchange={handleDeviceChange}
+                            required>
+                        </lightning-combobox>
+                        <lightning-input
+                            type="number"
+                            name="quantity"
+                            label="Quantity"
+                            value={orderQuantity}
+                            min="1"
+                            onchange={handleQuantityChange}
+                            required>
+                        </lightning-input>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button 
+                        label="Cancel" 
+                        onclick={hideCreateOrderForm}>
+                    </lightning-button>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Create Order" 
+                        onclick={handleCreateOrder}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
