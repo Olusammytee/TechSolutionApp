@@ -4,6 +4,9 @@
     <active>true</active>
     <description>Record type for standard orders with normal processing time</description>
     <label>Standard Order</label>
+    <layoutAssignments>
+        <layout>Device_Order__c-Device Order Layout</layout>
+    </layoutAssignments>
     <picklistValues>
         <picklist>Priority__c</picklist>
         <values>

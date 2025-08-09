@@ -4,6 +4,9 @@
     <active>true</active>
     <description>Record type for physical hardware devices like computers, servers, networking equipment</description>
     <label>Hardware Device</label>
+    <layoutAssignments>
+        <layout>Device__c-Device Layout</layout>
+    </layoutAssignments>
     <picklistValues>
         <picklist>Type__c</picklist>
         <values>

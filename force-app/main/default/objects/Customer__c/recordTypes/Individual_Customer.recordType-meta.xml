@@ -4,6 +4,9 @@
     <active>true</active>
     <description>Record type for individual consumers and personal customers</description>
     <label>Individual Customer</label>
+    <layoutAssignments>
+        <layout>Customer__c-Customer Layout</layout>
+    </layoutAssignments>
     <picklistValues>
         <picklist>Customer_Type__c</picklist>
         <values>

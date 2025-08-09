@@ -4,6 +4,9 @@
     <active>true</active>
     <description>Record type for urgent orders requiring expedited processing</description>
     <label>Rush Order</label>
+    <layoutAssignments>
+        <layout>Device_Order__c-Device Order Layout</layout>
+    </layoutAssignments>
     <picklistValues>
         <picklist>Priority__c</picklist>
         <values>

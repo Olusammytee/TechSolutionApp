@@ -4,6 +4,9 @@
     <active>true</active>
     <description>Record type for software licenses and digital products</description>
     <label>Software License</label>
+    <layoutAssignments>
+        <layout>Device__c-Device Layout</layout>
+    </layoutAssignments>
     <picklistValues>
         <picklist>Type__c</picklist>
         <values>
