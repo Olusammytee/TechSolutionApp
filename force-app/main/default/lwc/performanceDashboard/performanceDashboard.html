@@ -1,0 +1,229 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        
+        <!-- Dashboard Header -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <h2 class="slds-text-heading_medium">Performance Monitoring Dashboard</h2>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        System performance metrics and optimization insights
+                    </p>
+                </div>
+                <div>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Refresh Metrics" 
+                        icon-name="utility:refresh"
+                        onclick={handleRefresh}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Performance Metrics -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                
+                <!-- SOQL Utilization -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:database" size="medium" class="metric-icon soql-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {soqlUtilization}%
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                SOQL Utilization
+                            </div>
+                            <div class="metric-detail slds-text-body_small slds-m-top_x-small">
+                                {soqlQueries} / {soqlQueryLimit}
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- CPU Utilization -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:speed" size="medium" class="metric-icon cpu-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {cpuUtilization}%
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                CPU Utilization
+                            </div>
+                            <div class="metric-detail slds-text-body_small slds-m-top_x-small">
+                                {cpuTime} / {cpuTimeLimit} ms
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- DML Utilization -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:edit" size="medium" class="metric-icon dml-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {dmlUtilization}%
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                DML Utilization
+                            </div>
+                            <div class="metric-detail slds-text-body_small slds-m-top_x-small">
+                                {dmlStatements} / {dmlStatementLimit}
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Dashboard Load Time -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:clock" size="medium" class="metric-icon time-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {dashboardLoadTime}ms
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Dashboard Load Time
+                            </div>
+                            <div class="metric-detail slds-text-body_small slds-m-top_x-small">
+                                Last refresh
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- System Utilization Chart -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="System Resource Utilization" icon-name="utility:chart">
+                        <div class="slds-p-around_medium">
+                            <div class="utilization-chart">
+                                <div class="chart-item slds-m-bottom_medium">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <span class="chart-label slds-text-body_regular">SOQL Queries</span>
+                                        <span class="chart-value slds-text-body_regular">{soqlUtilization}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar soql-bar" style={soqlBarStyle}></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-item slds-m-bottom_medium">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <span class="chart-label slds-text-body_regular">CPU Time</span>
+                                        <span class="chart-value slds-text-body_regular">{cpuUtilization}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar cpu-bar" style={cpuBarStyle}></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-item slds-m-bottom_medium">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <span class="chart-label slds-text-body_regular">DML Statements</span>
+                                        <span class="chart-value slds-text-body_regular">{dmlUtilization}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar dml-bar" style={dmlBarStyle}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Performance Recommendations -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Performance Recommendations" icon-name="utility:knowledge_base">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasRecommendations}>
+                                <div class="recommendations-list">
+                                    <template for:each={performanceRecommendations} for:item="recommendation">
+                                        <div key={recommendation.id} class="recommendation-item slds-box slds-box_x-small slds-m-bottom_small">
+                                            <div class="slds-grid">
+                                                <div class="recommendation-icon slds-m-right_small">
+                                                    <lightning-icon 
+                                                        icon-name={recommendation.icon} 
+                                                        size="small" 
+                                                        class={recommendation.iconClass}>
+                                                    </lightning-icon>
+                                                </div>
+                                                <div class="recommendation-content">
+                                                    <div class="recommendation-title slds-text-body_regular slds-text-color_default">
+                                                        {recommendation.title}
+                                                    </div>
+                                                    <div class="recommendation-description slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                                        {recommendation.description}
+                                                    </div>
+                                                    <div class="recommendation-impact slds-m-top_x-small">
+                                                        <lightning-badge 
+                                                            label={recommendation.impact} 
+                                                            class={recommendation.impactClass}>
+                                                        </lightning-badge>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasRecommendations}>
+                                <div class="empty-state slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:success" size="small" class="slds-icon-text-success"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">System performance is optimal</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Performance History -->
+        <div class="slds-col slds-size_1-of-1">
+            <lightning-card title="Performance History" icon-name="utility:trending">
+                <div class="slds-p-around_medium">
+                    <div class="performance-history">
+                        <div class="history-header slds-grid slds-grid_align-spread slds-m-bottom_medium">
+                            <h3 class="slds-text-heading_small">Recent Performance Metrics</h3>
+                            <span class="slds-text-body_small slds-text-color_weak">Last 24 hours</span>
+                        </div>
+                        
+                        <template if:true={hasPerformanceHistory}>
+                            <div class="history-table">
+                                <lightning-datatable
+                                    key-field="timestamp"
+                                    data={performanceHistory}
+                                    columns={historyColumns}
+                                    hide-checkbox-column="true"
+                                    show-row-number-column="false"
+                                    resize-column-disabled="false">
+                                </lightning-datatable>
+                            </div>
+                        </template>
+                        <template if:false={hasPerformanceHistory}>
+                            <div class="empty-state slds-text-align_center slds-p-around_large">
+                                <lightning-icon icon-name="utility:trending" size="large" class="slds-icon-text-light"></lightning-icon>
+                                <p class="slds-text-body_regular slds-m-top_small">No performance history available</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </div>
+
+    </div>
+</template>

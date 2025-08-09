@@ -1,0 +1,277 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        
+        <!-- Dashboard Header -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <h2 class="slds-text-heading_medium">Customer Relationship Dashboard</h2>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        Customer analytics and relationship management insights
+                    </p>
+                </div>
+                <div>
+                    <lightning-button 
+                        variant="brand" 
+                        label="Refresh Data" 
+                        icon-name="utility:refresh"
+                        onclick={handleRefresh}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Metrics Row -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                
+                <!-- Total Customers -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:account" size="medium" class="metric-icon customers-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {totalCustomers}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Total Customers
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Active Customers -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:success" size="medium" class="metric-icon active-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small slds-text-color_success">
+                                {activeCustomers}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Active Customers
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- VIP Customers -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:opportunity" size="medium" class="metric-icon vip-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small slds-text-color_warning">
+                                {vipCustomers}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                VIP Customers
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Average Order Value -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:currency" size="medium" class="metric-icon currency-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {averageOrderValue}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Avg Order Value
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Customer Analytics Charts -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Customer Tier Distribution -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Customer Tier Distribution" icon-name="utility:pie_chart">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasCustomerTierData}>
+                                <div class="tier-chart">
+                                    <template for:each={customerTierData} for:item="tier">
+                                        <div key={tier.label} class="tier-item slds-m-bottom_medium">
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                                <div class="tier-info slds-grid slds-grid_vertical-align-center">
+                                                    <lightning-badge 
+                                                        label={tier.label} 
+                                                        class={tier.badgeClass}>
+                                                    </lightning-badge>
+                                                    <span class="tier-count slds-m-left_small">{tier.count} customers</span>
+                                                </div>
+                                                <span class="tier-percentage slds-text-heading_small">{tier.percentage}%</span>
+                                            </div>
+                                            <div class="tier-bar-container">
+                                                <div class="tier-bar" style={tier.barStyle}></div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasCustomerTierData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:pie_chart" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No customer tier data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Customer Lifetime Value -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Customer Lifetime Value Analysis" icon-name="utility:chart">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasLifetimeValueData}>
+                                <div class="ltv-analysis">
+                                    <div class="ltv-summary slds-m-bottom_medium">
+                                        <div class="slds-grid slds-wrap slds-gutters_small">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="ltv-metric">
+                                                    <div class="ltv-value slds-text-heading_medium">{totalLifetimeValue}</div>
+                                                    <div class="ltv-label slds-text-body_small slds-text-color_weak">Total LTV</div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="ltv-metric">
+                                                    <div class="ltv-value slds-text-heading_medium">{averageLifetimeValue}</div>
+                                                    <div class="ltv-label slds-text-body_small slds-text-color_weak">Average LTV</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ltv-ranges">
+                                        <template for:each={lifetimeValueRanges} for:item="range">
+                                            <div key={range.label} class="ltv-range-item slds-m-bottom_small">
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <span class="range-label slds-text-body_regular">{range.label}</span>
+                                                    <span class="range-count slds-text-body_regular">{range.count} customers</span>
+                                                </div>
+                                                <div class="range-bar-container slds-m-top_x-small">
+                                                    <div class="range-bar" style={range.barStyle}></div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                            <template if:false={hasLifetimeValueData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:chart" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No lifetime value data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Top Customers and Recent Activity -->
+        <div class="slds-col slds-size_1-of-1">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Top Customers -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Top Customers by Value" icon-name="standard:account">
+                        <div slot="actions">
+                            <lightning-button 
+                                variant="neutral" 
+                                label="View All" 
+                                onclick={handleViewAllCustomers}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasTopCustomers}>
+                                <div class="top-customers-list">
+                                    <template for:each={topCustomers} for:item="customer">
+                                        <div key={customer.customerId} class="customer-item slds-box slds-box_x-small slds-m-bottom_small">
+                                            <div class="slds-grid slds-grid_align-spread">
+                                                <div class="customer-info">
+                                                    <div class="customer-name slds-text-body_regular slds-text-color_default">
+                                                        {customer.customerName}
+                                                    </div>
+                                                    <div class="customer-details slds-text-body_small slds-text-color_weak">
+                                                        {customer.orderCount} orders • Last order: {customer.lastOrderDate}
+                                                    </div>
+                                                </div>
+                                                <div class="customer-value slds-text-align_right">
+                                                    <div class="value-amount slds-text-body_regular slds-text-color_default">
+                                                        {customer.totalValue}
+                                                    </div>
+                                                    <lightning-badge 
+                                                        label={customer.tier} 
+                                                        class={customer.tierClass}>
+                                                    </lightning-badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasTopCustomers}>
+                                <div class="empty-state slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="standard:account" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No customer data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Customer Insights -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Customer Insights" icon-name="utility:knowledge_base">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasCustomerInsights}>
+                                <div class="insights-list">
+                                    <template for:each={customerInsights} for:item="insight">
+                                        <div key={insight.id} class="insight-item slds-box slds-box_x-small slds-m-bottom_small">
+                                            <div class="slds-grid">
+                                                <div class="insight-icon slds-m-right_small">
+                                                    <lightning-icon 
+                                                        icon-name={insight.icon} 
+                                                        size="small" 
+                                                        class={insight.iconClass}>
+                                                    </lightning-icon>
+                                                </div>
+                                                <div class="insight-content">
+                                                    <div class="insight-title slds-text-body_regular slds-text-color_default">
+                                                        {insight.title}
+                                                    </div>
+                                                    <div class="insight-description slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                                        {insight.description}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasCustomerInsights}>
+                                <div class="empty-state slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:knowledge_base" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No insights available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</template>

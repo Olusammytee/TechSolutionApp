@@ -1,0 +1,253 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        
+        <!-- Dashboard Header -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <h2 class="slds-text-heading_medium">Inventory Management Dashboard</h2>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        Real-time inventory monitoring and stock optimization
+                    </p>
+                </div>
+                <div>
+                    <lightning-button-group>
+                        <lightning-button 
+                            variant="neutral" 
+                            label="Generate Report" 
+                            icon-name="utility:file"
+                            onclick={handleGenerateReport}>
+                        </lightning-button>
+                        <lightning-button 
+                            variant="brand" 
+                            label="Refresh" 
+                            icon-name="utility:refresh"
+                            onclick={handleRefresh}
+                            disabled={isLoading}>
+                        </lightning-button>
+                    </lightning-button-group>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Health Metrics -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                
+                <!-- Total Devices -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:product" size="medium" class="metric-icon total-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {totalDevices}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Total Devices
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- In Stock -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:success" size="medium" class="metric-icon success-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small slds-text-color_success">
+                                {inStockDevices}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                In Stock
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Low Stock -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:warning" size="medium" class="metric-icon warning-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small slds-text-color_warning">
+                                {lowStockDevices}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Low Stock
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Out of Stock -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="utility:error" size="medium" class="metric-icon error-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small slds-text-color_error">
+                                {outOfStockDevices}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Out of Stock
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Charts and Analysis Row -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Inventory Health Chart -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Inventory Health Distribution" icon-name="utility:pie_chart">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasInventoryHealthData}>
+                                <c-inventory-health-chart 
+                                    chart-data={inventoryHealthData}
+                                    height="300">
+                                </c-inventory-health-chart>
+                            </template>
+                            <template if:false={hasInventoryHealthData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:pie_chart" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No inventory data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Stock Levels by Category -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Stock Levels by Category" icon-name="utility:chart">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasCategoryData}>
+                                <c-category-stock-chart 
+                                    chart-data={categoryStockData}
+                                    height="300">
+                                </c-category-stock-chart>
+                            </template>
+                            <template if:false={hasCategoryData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:chart" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No category data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Inventory Alerts and Actions -->
+        <div class="slds-col slds-size_1-of-1">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Critical Stock Alerts -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Critical Stock Alerts" icon-name="standard:alert">
+                        <div slot="actions">
+                            <lightning-button 
+                                variant="neutral" 
+                                label="View All Alerts" 
+                                onclick={handleViewAllAlerts}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasCriticalAlerts}>
+                                <div class="alerts-list">
+                                    <template for:each={criticalAlerts} for:item="alert">
+                                        <div key={alert.deviceId} class="alert-item slds-box slds-box_x-small slds-m-bottom_small">
+                                            <div class="slds-grid slds-grid_align-spread">
+                                                <div class="alert-info">
+                                                    <div class="alert-device slds-text-body_regular slds-text-color_default">
+                                                        <lightning-icon 
+                                                            icon-name={alert.alertIcon} 
+                                                            size="x-small" 
+                                                            class={alert.alertIconClass}>
+                                                        </lightning-icon>
+                                                        {alert.deviceName}
+                                                    </div>
+                                                    <div class="alert-details slds-text-body_small slds-text-color_weak">
+                                                        {alert.alertMessage}
+                                                    </div>
+                                                </div>
+                                                <div class="alert-actions">
+                                                    <lightning-button 
+                                                        variant="neutral" 
+                                                        label="Reorder" 
+                                                        size="small"
+                                                        data-device-id={alert.deviceId}
+                                                        onclick={handleReorder}>
+                                                    </lightning-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasCriticalAlerts}>
+                                <div class="empty-state slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:success" size="small" class="slds-icon-text-success"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No critical stock alerts</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Reorder Recommendations -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Reorder Recommendations" icon-name="standard:opportunity">
+                        <div slot="actions">
+                            <lightning-button 
+                                variant="brand" 
+                                label="Create Purchase Order" 
+                                onclick={handleCreatePurchaseOrder}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasReorderRecommendations}>
+                                <div class="recommendations-list">
+                                    <template for:each={reorderRecommendations} for:item="recommendation">
+                                        <div key={recommendation.deviceId} class="recommendation-item slds-box slds-box_x-small slds-m-bottom_small">
+                                            <div class="slds-grid slds-grid_align-spread">
+                                                <div class="recommendation-info">
+                                                    <div class="recommendation-device slds-text-body_regular slds-text-color_default">
+                                                        {recommendation.deviceName}
+                                                    </div>
+                                                    <div class="recommendation-details slds-text-body_small slds-text-color_weak">
+                                                        Current: {recommendation.currentStock} | Recommended: {recommendation.recommendedQuantity}
+                                                    </div>
+                                                </div>
+                                                <div class="recommendation-priority">
+                                                    <lightning-badge 
+                                                        label={recommendation.priority} 
+                                                        class={recommendation.priorityClass}>
+                                                    </lightning-badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasReorderRecommendations}>
+                                <div class="empty-state slds-text-align_center slds-p-around_medium">
+                                    <lightning-icon icon-name="utility:success" size="small" class="slds-icon-text-success"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No reorder recommendations at this time</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</template>
