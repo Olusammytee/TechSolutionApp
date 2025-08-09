@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order_Date__c</fullName>
+    <label>Order Date</label>
+    <description>The date when this order was placed. Automatically populated when the order is created for tracking and reporting purposes.</description>
+    <inlineHelpText>Automatically set to today's date when the order is created. Used for order tracking, reporting, and business analytics.</inlineHelpText>
+    <type>Date</type>
+    <defaultValue>TODAY()</defaultValue>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <externalId>false</externalId>
+</CustomField>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reorder_Point__c</fullName>
+    <label>Reorder Point</label>
+    <description>The stock level at which automatic reordering should be triggered. This is typically higher than the minimum stock level to account for lead times.</description>
+    <inlineHelpText>When stock reaches this level, automatic reordering processes will be triggered. Should be set higher than Minimum Stock Level to account for supplier lead times.</inlineHelpText>
+    <type>Number</type>
+    <precision>18</precision>
+    <scale>0</scale>
+    <defaultValue>25</defaultValue>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <externalId>false</externalId>
+</CustomField>

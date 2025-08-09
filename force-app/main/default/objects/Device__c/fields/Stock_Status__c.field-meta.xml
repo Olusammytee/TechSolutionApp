@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stock_Status__c</fullName>
+    <label>Stock Status</label>
+    <description>Automatically calculated status based on current stock levels compared to minimum thresholds. Used for quick visual identification of inventory status.</description>
+    <inlineHelpText>Automatically updated by system triggers based on stock quantity vs. minimum levels. Green = In Stock, Yellow = Low Stock, Red = Out of Stock.</inlineHelpText>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>In Stock</fullName>
+                <default>true</default>
+                <label>In Stock</label>
+            </value>
+            <value>
+                <fullName>Low Stock</fullName>
+                <default>false</default>
+                <label>Low Stock</label>
+            </value>
+            <value>
+                <fullName>Out of Stock</fullName>
+                <default>false</default>
+                <label>Out of Stock</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <externalId>false</externalId>
+</CustomField>

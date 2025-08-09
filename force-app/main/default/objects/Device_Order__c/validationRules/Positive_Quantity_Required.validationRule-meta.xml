@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Positive_Quantity_Required</fullName>
+    <active>true</active>
+    <description>Ensures that order quantity is always a positive number greater than zero. Prevents invalid orders with zero or negative quantities.</description>
+    <errorConditionFormula>OR(
+        ISBLANK(Quantity__c),
+        Quantity__c &lt;= 0
+    )</errorConditionFormula>
+    <errorDisplayField>Quantity__c</errorDisplayField>
+    <errorMessage>Order quantity must be greater than zero. Please enter a valid positive number for the quantity.</errorMessage>
+</ValidationRule>

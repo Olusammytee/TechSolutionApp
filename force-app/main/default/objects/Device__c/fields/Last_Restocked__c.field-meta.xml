@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Restocked__c</fullName>
+    <label>Last Restocked</label>
+    <description>The date when this device was last restocked. Used for inventory tracking and reorder frequency analysis.</description>
+    <inlineHelpText>Automatically updated when stock levels are increased. Used for tracking inventory turnover and planning future orders.</inlineHelpText>
+    <type>Date</type>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <externalId>false</externalId>
+</CustomField>

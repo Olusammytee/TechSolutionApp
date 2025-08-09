@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Minimum_Stock_Level__c</fullName>
+    <label>Minimum Stock Level</label>
+    <description>The minimum stock level before reordering is required. Used for automated low stock alerts and inventory management.</description>
+    <inlineHelpText>Set the minimum quantity that should trigger reordering alerts. When stock falls below this level, the system will generate low stock notifications.</inlineHelpText>
+    <type>Number</type>
+    <precision>18</precision>
+    <scale>0</scale>
+    <defaultValue>10</defaultValue>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <externalId>false</externalId>
+</CustomField>

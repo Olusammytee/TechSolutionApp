@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Device_Required</fullName>
+    <active>true</active>
+    <description>Ensures that every Device Order must have a Device selected. This is a fundamental business rule that prevents incomplete orders from being created.</description>
+    <errorConditionFormula>ISBLANK(Device__c)</errorConditionFormula>
+    <errorDisplayField>Device__c</errorDisplayField>
+    <errorMessage>Please select a device for this order. A device selection is required to process the order.</errorMessage>
+</ValidationRule>

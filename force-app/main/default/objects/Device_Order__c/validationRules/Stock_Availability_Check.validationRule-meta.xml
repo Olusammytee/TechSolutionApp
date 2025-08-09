@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stock_Availability_Check</fullName>
+    <active>true</active>
+    <description>Validates that the order quantity does not exceed available stock. This prevents overselling and maintains inventory accuracy.</description>
+    <errorConditionFormula>AND(
+        NOT(ISBLANK(Device__c)),
+        NOT(ISBLANK(Quantity__c)),
+        Quantity__c &gt; Device__r.Stock_Quantity__c
+    )</errorConditionFormula>
+    <errorDisplayField>Quantity__c</errorDisplayField>
+    <errorMessage>Order quantity cannot exceed available stock. Available stock: {!Device__r.Stock_Quantity__c} units. Please reduce the quantity or contact inventory management.</errorMessage>
+</ValidationRule>

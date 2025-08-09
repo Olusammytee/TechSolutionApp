@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Business_Hours_Only</fullName>
+    <active>true</active>
+    <description>Simplified business hours check - demonstrates time-based validation. For educational purposes, this rule can be activated/deactivated to show time-based business logic concepts.</description>
+    <errorConditionFormula>OR(HOUR(NOW()) &lt; 9, HOUR(NOW()) &gt; 17)</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage>Orders can only be placed during business hours (9 AM - 5 PM). Please try again during business hours or contact customer service for urgent orders.</errorMessage>
+</ValidationRule>
