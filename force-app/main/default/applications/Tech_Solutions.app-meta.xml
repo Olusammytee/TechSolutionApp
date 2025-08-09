@@ -14,5 +14,7 @@
   <tabs>standard-Home</tabs>
   <tabs>Device__c</tabs>
   <tabs>Device_Order__c</tabs>
+  <tabs>Customer__c</tabs>
+  <tabs>Supplier__c</tabs>
   <uiType>Lightning</uiType>
 </CustomApplication>

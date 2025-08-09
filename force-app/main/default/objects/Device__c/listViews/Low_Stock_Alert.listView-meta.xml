@@ -5,18 +5,12 @@
     <columns>Type__c</columns>
     <columns>Stock_Quantity__c</columns>
     <columns>Price__c</columns>
-    <columns>Active__c</columns>
-    <columns>LAST_UPDATE</columns>
+    <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>Stock_Quantity__c</field>
         <operation>lessThan</operation>
         <value>10</value>
-    </filters>
-    <filters>
-        <field>Active__c</field>
-        <operation>equals</operation>
-        <value>True</value>
     </filters>
     <label>Low Stock Alert</label>
     <language>en_US</language>
