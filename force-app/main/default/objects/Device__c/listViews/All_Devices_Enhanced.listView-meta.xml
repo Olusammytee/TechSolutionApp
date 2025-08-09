@@ -3,11 +3,15 @@
     <fullName>All_Devices_Enhanced</fullName>
     <columns>NAME</columns>
     <columns>Type__c</columns>
-    <columns>Stock_Quantity__c</columns>
+    <columns>Supplier__c</columns>
     <columns>Price__c</columns>
+    <columns>Cost_Price__c</columns>
+    <columns>Profit_Margin__c</columns>
+    <columns>Stock_Quantity__c</columns>
+    <columns>Stock_Status__c</columns>
+    <columns>Minimum_Stock_Level__c</columns>
+    <columns>Warranty_Period_Months__c</columns>
     <columns>Active__c</columns>
-    <columns>CREATED_DATE</columns>
-    <columns>LAST_UPDATE</columns>
     <filterScope>Everything</filterScope>
     <label>All Devices - Enhanced</label>
     <language>en_US</language>
