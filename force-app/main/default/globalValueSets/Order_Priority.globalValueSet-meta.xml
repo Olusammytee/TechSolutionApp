@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order_Priority</fullName>
+    <description>Global value set for order priority levels across the organization</description>
+    <masterLabel>Order Priority</masterLabel>
+    <sorted>false</sorted>
+    <customValue>
+        <fullName>Critical</fullName>
+        <default>false</default>
+        <label>Critical</label>
+    </customValue>
+    <customValue>
+        <fullName>High</fullName>
+        <default>false</default>
+        <label>High</label>
+    </customValue>
+    <customValue>
+        <fullName>Medium</fullName>
+        <default>true</default>
+        <label>Medium</label>
+    </customValue>
+    <customValue>
+        <fullName>Low</fullName>
+        <default>false</default>
+        <label>Low</label>
+    </customValue>
+</GlobalValueSet>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Non_Negative_Stock_Validation</fullName>
+    <active>true</active>
+    <description>Ensures that Stock Quantity, Minimum Stock Level, and Reorder Point are non-negative</description>
+    <errorConditionFormula>Stock_Quantity__c &lt; 0 || 
+Minimum_Stock_Level__c &lt; 0 || 
+Reorder_Point__c &lt; 0</errorConditionFormula>
+    <errorMessage>Stock quantities and levels cannot be negative. Please enter valid non-negative values for Stock Quantity, Minimum Stock Level, and Reorder Point.</errorMessage>
+</ValidationRule>

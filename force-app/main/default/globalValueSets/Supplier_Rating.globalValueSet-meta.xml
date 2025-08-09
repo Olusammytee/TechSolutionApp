@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Supplier_Rating</fullName>
+    <description>Global value set for supplier performance ratings across the organization</description>
+    <masterLabel>Supplier Rating</masterLabel>
+    <sorted>false</sorted>
+    <customValue>
+        <fullName>Excellent</fullName>
+        <default>false</default>
+        <label>Excellent</label>
+    </customValue>
+    <customValue>
+        <fullName>Good</fullName>
+        <default>true</default>
+        <label>Good</label>
+    </customValue>
+    <customValue>
+        <fullName>Fair</fullName>
+        <default>false</default>
+        <label>Fair</label>
+    </customValue>
+    <customValue>
+        <fullName>Poor</fullName>
+        <default>false</default>
+        <label>Poor</label>
+    </customValue>
+    <customValue>
+        <fullName>Under Review</fullName>
+        <default>false</default>
+        <label>Under Review</label>
+    </customValue>
+</GlobalValueSet>

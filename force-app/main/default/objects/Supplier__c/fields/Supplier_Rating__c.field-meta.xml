@@ -8,29 +8,6 @@
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
-        <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>Excellent</fullName>
-                <default>false</default>
-                <label>Excellent</label>
-            </value>
-            <value>
-                <fullName>Good</fullName>
-                <default>false</default>
-                <label>Good</label>
-            </value>
-            <value>
-                <fullName>Average</fullName>
-                <default>false</default>
-                <label>Average</label>
-            </value>
-            <value>
-                <fullName>Poor</fullName>
-                <default>false</default>
-                <label>Poor</label>
-            </value>
-        </valueSetDefinition>
+        <valueSetName>Supplier_Rating</valueSetName>
     </valueSet>
 </CustomField>

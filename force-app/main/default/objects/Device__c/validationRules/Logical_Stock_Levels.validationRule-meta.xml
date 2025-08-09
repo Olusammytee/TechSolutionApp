@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Logical_Stock_Levels</fullName>
+    <active>true</active>
+    <description>Ensures that Reorder Point is greater than or equal to Minimum Stock Level for logical inventory management</description>
+    <errorConditionFormula>Reorder_Point__c &lt; Minimum_Stock_Level__c</errorConditionFormula>
+    <errorMessage>Reorder Point must be greater than or equal to Minimum Stock Level. Please adjust these values to ensure logical inventory management.</errorMessage>
+</ValidationRule>

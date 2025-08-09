@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Supplier_Code__c</fullName>
+    <label>Supplier Code</label>
+    <description>Unique supplier code for integration and identification purposes</description>
+    <inlineHelpText>Unique identifier for this supplier. Used for integrations, reporting, and supplier management systems.</inlineHelpText>
+    <type>Text</type>
+    <length>10</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <unique>true</unique>
+    <externalId>true</externalId>
+    <caseSensitive>false</caseSensitive>
+</CustomField>

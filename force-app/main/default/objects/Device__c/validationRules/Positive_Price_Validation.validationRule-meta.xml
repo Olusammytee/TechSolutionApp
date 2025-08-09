@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Positive_Price_Validation</fullName>
+    <active>true</active>
+    <description>Ensures that Device Price is always positive and greater than zero</description>
+    <errorConditionFormula>Price__c &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Price__c</errorDisplayField>
+    <errorMessage>Device Price must be greater than zero. Please enter a valid positive price.</errorMessage>
+</ValidationRule>

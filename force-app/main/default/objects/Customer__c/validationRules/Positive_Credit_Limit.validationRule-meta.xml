@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Positive_Credit_Limit</fullName>
+    <active>true</active>
+    <description>Ensures that Customer Credit Limit is positive when specified</description>
+    <errorConditionFormula>NOT(ISBLANK(Credit_Limit__c)) &amp;&amp; Credit_Limit__c &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Credit_Limit__c</errorDisplayField>
+    <errorMessage>Credit Limit must be greater than zero when specified. Please enter a valid positive amount.</errorMessage>
+</ValidationRule>

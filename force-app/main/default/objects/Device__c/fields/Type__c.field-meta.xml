@@ -4,11 +4,6 @@
   <label>Type</label>
   <type>Picklist</type>
   <valueSet>
-    <valueSetDefinition>
-      <sorted>false</sorted>
-      <value><fullName>Laptop</fullName><default>false</default><label>Laptop</label></value>
-      <value><fullName>Smartphone</fullName><default>false</default><label>Smartphone</label></value>
-      <value><fullName>Tablet</fullName><default>false</default><label>Tablet</label></value>
-    </valueSetDefinition>
+    <valueSetName>Device_Type</valueSetName>
   </valueSet>
 </CustomField>

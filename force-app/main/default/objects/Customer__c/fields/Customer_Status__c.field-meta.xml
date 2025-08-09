@@ -8,29 +8,6 @@
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
-        <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>Active</fullName>
-                <default>true</default>
-                <label>Active</label>
-            </value>
-            <value>
-                <fullName>Inactive</fullName>
-                <default>false</default>
-                <label>Inactive</label>
-            </value>
-            <value>
-                <fullName>VIP</fullName>
-                <default>false</default>
-                <label>VIP</label>
-            </value>
-            <value>
-                <fullName>Suspended</fullName>
-                <default>false</default>
-                <label>Suspended</label>
-            </value>
-        </valueSetDefinition>
+        <valueSetName>Customer_Status</valueSetName>
     </valueSet>
 </CustomField>

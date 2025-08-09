@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Permission set for Executive team members - read-only access with analytics focus</description>
+    <label>TechSolutions Executive</label>
+    
+    <!-- Application Visibility -->
+    <applicationVisibilities>
+        <application>Tech_Solutions</application>
+        <visible>true</visible>
+    </applicationVisibilities>
+    
+    <!-- Tab Settings -->
+    <tabSettings>
+        <tab>Device__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Customer__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Supplier__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Device_Order__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <!-- Object Permissions - Read-Only with Analytics Focus -->
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Device__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Customer__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Supplier__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Device_Order__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    
+    <!-- Field Permissions - Read-Only Access to All Fields -->
+    <!-- Device Fields -->
+    <fieldPermissions>
+        <field>Device__c.Type__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device__c.Stock_Quantity__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device__c.Price__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device__c.Cost_Price__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device__c.Profit_Margin__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device__c.Stock_Status__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Customer Fields -->
+    <fieldPermissions>
+        <field>Customer__c.Customer_Type__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Customer__c.Customer_Status__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Customer__c.Credit_Limit__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Order Fields -->
+    <fieldPermissions>
+        <field>Device_Order__c.Status__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device_Order__c.Priority__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Device_Order__c.Final_Amount__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <!-- Supplier Fields -->
+    <fieldPermissions>
+        <field>Supplier__c.Supplier_Rating__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Supplier__c.Country__c</field>
+        <editable>false</editable>
+        <readable>true</readable>
+    </fieldPermissions>
+</PermissionSet>
