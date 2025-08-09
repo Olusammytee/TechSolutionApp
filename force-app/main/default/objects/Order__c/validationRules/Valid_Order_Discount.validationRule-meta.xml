@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Order_Discount</fullName>
+    <active>true</active>
+    <description>Ensures that Order Discount Percentage is between 0% and 50%</description>
+    <errorConditionFormula>NOT(ISBLANK(Order_Discount_Percentage__c)) &amp;&amp; 
+(Order_Discount_Percentage__c &lt; 0 || Order_Discount_Percentage__c &gt; 50)</errorConditionFormula>
+    <errorDisplayField>Order_Discount_Percentage__c</errorDisplayField>
+    <errorMessage>Order Discount Percentage must be between 0% and 50%. Please enter a valid discount percentage.</errorMessage>
+</ValidationRule>

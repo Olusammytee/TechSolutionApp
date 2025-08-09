@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Line_Discount</fullName>
+    <active>true</active>
+    <description>Ensures that Line Discount Percentage is between 0% and 100%</description>
+    <errorConditionFormula>NOT(ISBLANK(Line_Discount_Percentage__c)) &amp;&amp; 
+(Line_Discount_Percentage__c &lt; 0 || Line_Discount_Percentage__c &gt; 100)</errorConditionFormula>
+    <errorDisplayField>Line_Discount_Percentage__c</errorDisplayField>
+    <errorMessage>Line Discount Percentage must be between 0% and 100%. Please enter a valid discount percentage.</errorMessage>
+</ValidationRule>

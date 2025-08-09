@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Line_Discount_Percentage__c</fullName>
+    <defaultValue>0</defaultValue>
+    <description>Discount percentage applied to this specific line item</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Apply a discount percentage to this line item. This is separate from any order-level discounts.</inlineHelpText>
+    <label>Line Discount (%)</label>
+    <precision>5</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

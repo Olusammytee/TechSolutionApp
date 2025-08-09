@@ -2,8 +2,12 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Line_Total__c</fullName>
     <externalId>false</externalId>
-    <formula>Quantity__c * Unit_Price__c</formula>
+    <description>Total amount for this line item after applying line-level discounts</description>
+    <formula>IF(AND(NOT(ISBLANK(Unit_Price__c)), NOT(ISBLANK(Quantity__c))),
+    (Unit_Price__c * Quantity__c) - BLANKVALUE(Line_Discount_Amount__c, 0),
+    0)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Automatically calculated as (Unit Price × Quantity) - Line Discount Amount.</inlineHelpText>
     <label>Line Total</label>
     <precision>18</precision>
     <required>false</required>

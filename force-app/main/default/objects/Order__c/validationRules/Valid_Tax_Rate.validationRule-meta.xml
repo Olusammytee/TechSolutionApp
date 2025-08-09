@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Tax_Rate</fullName>
+    <active>true</active>
+    <description>Ensures that Tax Rate is between 0% and 25%</description>
+    <errorConditionFormula>NOT(ISBLANK(Tax_Rate__c)) &amp;&amp; (Tax_Rate__c &lt; 0 || Tax_Rate__c &gt; 25)</errorConditionFormula>
+    <errorDisplayField>Tax_Rate__c</errorDisplayField>
+    <errorMessage>Tax Rate must be between 0% and 25%. Please enter a valid tax rate.</errorMessage>
+</ValidationRule>

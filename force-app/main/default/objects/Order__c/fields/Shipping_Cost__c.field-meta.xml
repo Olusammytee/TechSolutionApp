@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shipping_Cost__c</fullName>
+    <defaultValue>0</defaultValue>
+    <description>Shipping and handling cost for this order</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter the shipping cost for this order. Defaults to $0 for local pickup or free shipping promotions.</inlineHelpText>
+    <label>Shipping Cost</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>
