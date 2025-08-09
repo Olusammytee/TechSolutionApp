@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Timestamp__c</fullName>
+    <defaultValue>NOW()</defaultValue>
+    <description>Date and time when the error occurred</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The exact date and time when the error was logged.</inlineHelpText>
+    <label>Timestamp</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

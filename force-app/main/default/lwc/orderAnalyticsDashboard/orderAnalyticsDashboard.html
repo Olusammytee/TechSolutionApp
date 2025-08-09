@@ -1,0 +1,266 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        
+        <!-- Dashboard Header -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div>
+                    <h2 class="slds-text-heading_medium">Order Analytics Dashboard</h2>
+                    <p class="slds-text-body_regular slds-text-color_weak">
+                        Comprehensive order pipeline and performance analytics
+                    </p>
+                </div>
+                <div>
+                    <lightning-button-group>
+                        <lightning-button 
+                            variant="neutral" 
+                            label="Export Data" 
+                            icon-name="utility:download"
+                            onclick={handleExportData}>
+                        </lightning-button>
+                        <lightning-button 
+                            variant="brand" 
+                            label="Refresh" 
+                            icon-name="utility:refresh"
+                            onclick={handleRefresh}
+                            disabled={isLoading}>
+                        </lightning-button>
+                    </lightning-button-group>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Row -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                
+                <!-- Total Orders Metric -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:orders" size="medium" class="metric-icon orders-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {totalOrders}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Total Orders
+                            </div>
+                            <div class="metric-change slds-m-top_x-small">
+                                <span class={ordersTrendClass}>{ordersTrendText}</span>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Active Orders Metric -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:task" size="medium" class="metric-icon active-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {activeOrders}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Active Orders
+                            </div>
+                            <div class="metric-change slds-m-top_x-small">
+                                <span class={activeTrendClass}>{activeTrendText}</span>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Pending Orders Metric -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:approval" size="medium" class="metric-icon pending-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {pendingOrders}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Pending Orders
+                            </div>
+                            <div class="metric-change slds-m-top_x-small">
+                                <span class={pendingTrendClass}>{pendingTrendText}</span>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Average Processing Time -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <lightning-card class="metric-card">
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-icon icon-name="standard:timesheet" size="medium" class="metric-icon time-icon"></lightning-icon>
+                            <div class="metric-value slds-text-heading_large slds-m-top_small">
+                                {averageProcessingTime}
+                            </div>
+                            <div class="metric-label slds-text-body_small slds-text-color_weak">
+                                Avg Processing Time
+                            </div>
+                            <div class="metric-change slds-m-top_x-small">
+                                <span class={timeTrendClass}>{timeTrendText}</span>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Order Pipeline Chart -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Order Pipeline" icon-name="utility:kanban">
+                        <div slot="actions">
+                            <lightning-button-menu 
+                                alternative-text="Chart Options" 
+                                icon-size="x-small"
+                                menu-alignment="right">
+                                <lightning-menu-item value="export" label="Export Chart"></lightning-menu-item>
+                                <lightning-menu-item value="fullscreen" label="View Fullscreen"></lightning-menu-item>
+                                <lightning-menu-item value="settings" label="Chart Settings"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasOrderPipelineData}>
+                                <c-order-pipeline-chart 
+                                    chart-data={orderPipelineData}
+                                    height="350"
+                                    onstatusclick={handleStatusClick}>
+                                </c-order-pipeline-chart>
+                            </template>
+                            <template if:false={hasOrderPipelineData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:kanban" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No pipeline data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Order Trends Chart -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                    <lightning-card title="Order Trends" icon-name="utility:trending">
+                        <div slot="actions">
+                            <lightning-combobox
+                                name="trendPeriod"
+                                value={selectedTrendPeriod}
+                                placeholder="Select Period"
+                                options={trendPeriodOptions}
+                                onchange={handleTrendPeriodChange}
+                                variant="label-hidden">
+                            </lightning-combobox>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasOrderTrendsData}>
+                                <c-order-trends-chart 
+                                    chart-data={orderTrendsData}
+                                    period={selectedTrendPeriod}
+                                    height="350">
+                                </c-order-trends-chart>
+                            </template>
+                            <template if:false={hasOrderTrendsData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:trending" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No trend data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Order Details and Priority Analysis -->
+        <div class="slds-col slds-size_1-of-1">
+            <div class="slds-grid slds-wrap slds-gutters">
+                
+                <!-- Recent Orders Table -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-3">
+                    <lightning-card title="Recent Orders" icon-name="standard:orders">
+                        <div slot="actions">
+                            <lightning-button 
+                                variant="neutral" 
+                                label="View All" 
+                                onclick={handleViewAllOrders}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasRecentOrders}>
+                                <lightning-datatable
+                                    key-field="orderId"
+                                    data={recentOrdersData}
+                                    columns={orderColumns}
+                                    hide-checkbox-column="true"
+                                    show-row-number-column="false"
+                                    resize-column-disabled="false"
+                                    sorted-by={sortedBy}
+                                    sorted-direction={sortedDirection}
+                                    onsort={handleSort}
+                                    onrowaction={handleRowAction}>
+                                </lightning-datatable>
+                            </template>
+                            <template if:false={hasRecentOrders}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="standard:orders" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No recent orders found</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- Priority Analysis -->
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                    <lightning-card title="Priority Analysis" icon-name="utility:priority">
+                        <div class="slds-p-around_medium">
+                            <template if:true={hasPriorityData}>
+                                <div class="priority-analysis">
+                                    <template for:each={priorityAnalysisData} for:item="priority">
+                                        <div key={priority.label} class="priority-item slds-m-bottom_medium">
+                                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                                <div class="priority-label">
+                                                    <lightning-badge 
+                                                        label={priority.label} 
+                                                        class={priority.badgeClass}>
+                                                    </lightning-badge>
+                                                </div>
+                                                <div class="priority-count slds-text-heading_small">
+                                                    {priority.count}
+                                                </div>
+                                            </div>
+                                            <div class="priority-bar-container">
+                                                <div 
+                                                    class="priority-bar" 
+                                                    style={priority.barStyle}>
+                                                </div>
+                                            </div>
+                                            <div class="priority-percentage slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                                {priority.percentage}% of total orders
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:false={hasPriorityData}>
+                                <div class="empty-state slds-text-align_center slds-p-around_large">
+                                    <lightning-icon icon-name="utility:priority" size="large" class="slds-icon-text-light"></lightning-icon>
+                                    <p class="slds-text-body_regular slds-m-top_small">No priority data available</p>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</template>

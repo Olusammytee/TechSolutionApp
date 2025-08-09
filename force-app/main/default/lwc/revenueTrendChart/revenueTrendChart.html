@@ -1,0 +1,76 @@
+<template>
+    <div class="chart-container">
+        <template if:true={hasData}>
+            <!-- Chart will be rendered here using Chart.js or Lightning Base Components -->
+            <div class="revenue-chart" lwc:dom="manual"></div>
+            
+            <!-- Fallback: Simple bar representation for now -->
+            <div class="simple-chart slds-p-around_small">
+                <div class="chart-header slds-m-bottom_small">
+                    <h3 class="slds-text-heading_small">Daily Revenue Trend</h3>
+                    <p class="slds-text-body_small slds-text-color_weak">Last 30 days</p>
+                </div>
+                
+                <div class="chart-bars">
+                    <template for:each={chartData} for:item="dataPoint" for:index="index">
+                        <div key={dataPoint.label} class="bar-container">
+                            <div class="bar-wrapper">
+                                <div 
+                                    class="revenue-bar" 
+                                    style={dataPoint.barStyle}
+                                    title={dataPoint.tooltip}>
+                                </div>
+                            </div>
+                            <div class="bar-label slds-text-body_small slds-text-align_center">
+                                {dataPoint.shortLabel}
+                            </div>
+                            <div class="bar-value slds-text-body_small slds-text-align_center slds-text-color_weak">
+                                {dataPoint.formattedValue}
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <!-- Chart Legend -->
+                <div class="chart-legend slds-m-top_small slds-text-align_center">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background-color: #0176d3;"></span>
+                        <span class="slds-text-body_small">Daily Revenue</span>
+                    </div>
+                </div>
+                
+                <!-- Chart Summary -->
+                <div class="chart-summary slds-m-top_medium slds-p-top_small slds-border_top">
+                    <div class="slds-grid slds-grid_align-spread">
+                        <div class="slds-text-align_left">
+                            <div class="slds-text-body_small slds-text-color_weak">Total Period</div>
+                            <div class="slds-text-heading_small">{totalRevenue}</div>
+                        </div>
+                        <div class="slds-text-align_center">
+                            <div class="slds-text-body_small slds-text-color_weak">Average Daily</div>
+                            <div class="slds-text-heading_small">{averageDaily}</div>
+                        </div>
+                        <div class="slds-text-align_right">
+                            <div class="slds-text-body_small slds-text-color_weak">Peak Day</div>
+                            <div class="slds-text-heading_small">{peakDay}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <template if:false={hasData}>
+            <div class="empty-state slds-text-align_center slds-p-around_large">
+                <lightning-icon 
+                    icon-name="utility:chart" 
+                    size="large" 
+                    class="slds-m-bottom_small slds-icon-text-light">
+                </lightning-icon>
+                <h3 class="slds-text-heading_small slds-m-bottom_small">No Revenue Data</h3>
+                <p class="slds-text-body_regular slds-text-color_weak">
+                    Revenue data will appear here once orders are processed.
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

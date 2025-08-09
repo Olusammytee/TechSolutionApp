@@ -1,0 +1,268 @@
+/* Order Analytics Dashboard Styles */
+
+.metric-card {
+    height: 100%;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metric-icon {
+    margin-bottom: 0.5rem;
+}
+
+.orders-icon {
+    --slds-c-icon-color-foreground-default: #0176d3;
+}
+
+.active-icon {
+    --slds-c-icon-color-foreground-default: #fe9339;
+}
+
+.pending-icon {
+    --slds-c-icon-color-foreground-default: #ffb75d;
+}
+
+.time-icon {
+    --slds-c-icon-color-foreground-default: #9a77cf;
+}
+
+.metric-value {
+    font-weight: 700;
+    line-height: 1.2;
+    color: #080707;
+}
+
+.metric-label {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Priority Analysis Styles */
+.priority-analysis {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.priority-item {
+    border-radius: 4px;
+    padding: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.priority-item:hover {
+    background-color: #f8f9fa;
+}
+
+.priority-label {
+    display: flex;
+    align-items: center;
+}
+
+.priority-count {
+    font-weight: 700;
+    color: #080707;
+}
+
+.priority-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.priority-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease-out;
+}
+
+.priority-percentage {
+    font-size: 0.75rem;
+}
+
+/* Empty State Styles */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.empty-state lightning-icon {
+    opacity: 0.3;
+}
+
+/* Data Table Customization */
+.slds-table th,
+.slds-table td {
+    padding: 0.75rem 0.5rem;
+}
+
+.slds-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Badge Styling */
+.slds-theme_error {
+    background-color: #ea6b66;
+    color: white;
+}
+
+.slds-theme_warning {
+    background-color: #ffb75d;
+    color: #080707;
+}
+
+.slds-theme_info {
+    background-color: #5ddaff;
+    color: #080707;
+}
+
+.slds-theme_success {
+    background-color: #4bc076;
+    color: white;
+}
+
+.slds-theme_default {
+    background-color: #747474;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    .priority-analysis {
+        max-height: 300px;
+    }
+    
+    .priority-item {
+        padding: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .priority-bar-container {
+        height: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .metric-card .slds-p-around_medium {
+        padding: 1rem 0.5rem;
+    }
+    
+    .metric-value {
+        font-size: 1.25rem;
+    }
+    
+    .metric-label {
+        font-size: 0.75rem;
+    }
+    
+    .metric-change {
+        font-size: 0.7rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.metric-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Stagger animation for metric cards */
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Priority bar animation */
+@keyframes barGrow {
+    from {
+        width: 0;
+    }
+    to {
+        width: var(--final-width);
+    }
+}
+
+.priority-bar {
+    animation: barGrow 1s ease-out;
+}
+
+/* Loading state */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Chart container styling */
+.chart-container {
+    position: relative;
+    min-height: 350px;
+}
+
+/* Accessibility */
+.priority-item:focus-within {
+    outline: 2px solid #0176d3;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .priority-bar-container {
+        border: 2px solid #000000;
+    }
+    
+    .metric-card {
+        border: 2px solid #000000;
+    }
+    
+    .priority-item:hover {
+        background-color: #ffffff;
+        border: 1px solid #000000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .metric-card,
+    .priority-bar,
+    .priority-item {
+        animation: none;
+        transition: none;
+    }
+}

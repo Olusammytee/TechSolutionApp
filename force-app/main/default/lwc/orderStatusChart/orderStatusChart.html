@@ -1,0 +1,94 @@
+<template>
+    <div class="chart-container">
+        <template if:true={hasData}>
+            <div class="status-chart slds-p-around_small">
+                <div class="chart-header slds-m-bottom_medium">
+                    <h3 class="slds-text-heading_small">Order Status Distribution</h3>
+                    <p class="slds-text-body_small slds-text-color_weak">Current order pipeline</p>
+                </div>
+                
+                <!-- Donut Chart Representation -->
+                <div class="donut-chart-container">
+                    <div class="donut-chart">
+                        <svg viewBox="0 0 100 100" class="donut-svg">
+                            <template for:each={chartSegments} for:item="segment" for:index="index">
+                                <path 
+                                    key={segment.label}
+                                    d={segment.pathData}
+                                    fill={segment.color}
+                                    stroke="#ffffff"
+                                    stroke-width="1"
+                                    class="donut-segment"
+                                    data-label={segment.label}
+                                    data-value={segment.value}
+                                    title={segment.tooltip}>
+                                </path>
+                            </template>
+                        </svg>
+                        
+                        <!-- Center Content -->
+                        <div class="donut-center">
+                            <div class="center-value slds-text-heading_large">{totalOrders}</div>
+                            <div class="center-label slds-text-body_small slds-text-color_weak">Total Orders</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Legend -->
+                <div class="chart-legend slds-m-top_medium">
+                    <template for:each={chartData} for:item="item" for:index="index">
+                        <div key={item.label} class="legend-item slds-m-bottom_x-small">
+                            <div class="legend-row slds-grid slds-grid_align-spread">
+                                <div class="legend-info slds-grid slds-grid_vertical-align-center">
+                                    <span 
+                                        class="legend-color" 
+                                        style={item.colorStyle}>
+                                    </span>
+                                    <span class="legend-label slds-text-body_regular">{item.label}</span>
+                                </div>
+                                <div class="legend-stats slds-text-align_right">
+                                    <div class="legend-value slds-text-body_regular">{item.value}</div>
+                                    <div class="legend-percentage slds-text-body_small slds-text-color_weak">
+                                        {item.percentage}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <!-- Summary Stats -->
+                <div class="chart-summary slds-m-top_medium slds-p-around_small slds-border_top">
+                    <div class="slds-grid slds-wrap slds-gutters_small">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="stat-item">
+                                <div class="stat-value slds-text-heading_small">{activeOrders}</div>
+                                <div class="stat-label slds-text-body_small slds-text-color_weak">Active Orders</div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="stat-item">
+                                <div class="stat-value slds-text-heading_small">{completedOrders}</div>
+                                <div class="stat-label slds-text-body_small slds-text-color_weak">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <template if:false={hasData}>
+            <div class="empty-state slds-text-align_center slds-p-around_large">
+                <lightning-icon 
+                    icon-name="utility:pie_chart" 
+                    size="large" 
+                    class="slds-m-bottom_small slds-icon-text-light">
+                </lightning-icon>
+                <h3 class="slds-text-heading_small slds-m-bottom_small">No Order Data</h3>
+                <p class="slds-text-body_regular slds-text-color_weak">
+                    Order status distribution will appear here once orders are created.
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

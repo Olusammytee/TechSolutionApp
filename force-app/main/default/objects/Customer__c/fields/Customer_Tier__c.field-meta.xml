@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Customer_Tier__c</fullName>
+    <description>Customer tier based on total order value and engagement</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Automatically calculated customer tier based on lifetime value: Bronze (&lt;$5K), Silver ($5K-$25K), Gold ($25K-$100K), Platinum ($100K+).</inlineHelpText>
+    <label>Customer Tier</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Bronze</fullName>
+                <default>true</default>
+                <label>Bronze</label>
+            </value>
+            <value>
+                <fullName>Silver</fullName>
+                <default>false</default>
+                <label>Silver</label>
+            </value>
+            <value>
+                <fullName>Gold</fullName>
+                <default>false</default>
+                <label>Gold</label>
+            </value>
+            <value>
+                <fullName>Platinum</fullName>
+                <default>false</default>
+                <label>Platinum</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
