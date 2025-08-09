@@ -67,6 +67,46 @@
 
   <!-- Field Permissions for Device__c Custom Fields -->
   <fieldPermissions>
+    <field>Device__c.Type__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Stock_Quantity__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Price__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Cost_Price__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Profit_Margin__c</field>
+    <editable>false</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Warranty_Period_Months__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Active__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device__c.Supplier__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
     <field>Device__c.Minimum_Stock_Level__c</field>
     <editable>true</editable>
     <readable>true</readable>
@@ -89,8 +129,33 @@
 
   <!-- Field Permissions for Device_Order__c Custom Fields -->
   <fieldPermissions>
-    <field>Device_Order__c.Total_Price__c</field>
+    <field>Device_Order__c.Device__c</field>
     <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Customer__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Quantity__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Status__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Priority__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Total_Price__c</field>
+    <editable>false</editable>
     <readable>true</readable>
   </fieldPermissions>
   <fieldPermissions>
@@ -99,7 +164,91 @@
     <readable>true</readable>
   </fieldPermissions>
   <fieldPermissions>
+    <field>Device_Order__c.Expected_Delivery_Date__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Discount_Percentage__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Device_Order__c.Final_Amount__c</field>
+    <editable>false</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
     <field>Device_Order__c.Confirmation_Number__c</field>
+    <editable>false</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+
+  <!-- Field Permissions for Customer__c Custom Fields -->
+  <fieldPermissions>
+    <field>Customer__c.Email__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Customer__c.Phone__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Customer__c.Address__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Customer__c.Customer_Type__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Customer__c.Customer_Status__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Customer__c.Credit_Limit__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+
+  <!-- Field Permissions for Supplier__c Custom Fields -->
+  <fieldPermissions>
+    <field>Supplier__c.Company_Name__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Contact_Person__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Email__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Phone__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Country__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Supplier_Rating__c</field>
+    <editable>true</editable>
+    <readable>true</readable>
+  </fieldPermissions>
+  <fieldPermissions>
+    <field>Supplier__c.Active__c</field>
     <editable>true</editable>
     <readable>true</readable>
   </fieldPermissions>
