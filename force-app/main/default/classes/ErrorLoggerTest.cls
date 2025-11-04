@@ -420,31 +420,48 @@ private class ErrorLoggerTest {
      *
      * WHAT THIS TESTS:
      * - Handling of null/empty operation names
-     * - Defensive programming
-     * - No exceptions with bad input
+     * - Defensive programming against null Map keys
+     * - No exceptions with invalid input
      *
-     * LEARNING POINT: Good code handles edge cases gracefully
+     * LEARNING POINT: Apex Maps cannot have null keys - defensive guards required!
+     *
+     * CRITICAL: This test validates a bug fix. Without defensive null checks,
+     * ErrorLogger.startPerformanceMonitoring(null) would throw NullPointerException
+     * because Apex Map.put(null, value) is not allowed.
      */
     @isTest
     static void testEdgeCaseNullOperationName() {
         // 📝 ARRANGE
         String nullOperation = null;
+        String blankOperation = '   ';
         Long executionTime = 100L;
 
         // 🎬 ACT
         Test.startTest();
 
-        // This should not throw an exception
+        // These should NOT throw exceptions - should handle gracefully
         ErrorLogger.startPerformanceMonitoring(nullOperation);
         ErrorLogger.endPerformanceMonitoring(nullOperation);
         ErrorLogger.logPerformanceMetric(nullOperation, executionTime);
 
+        // Also test blank strings
+        ErrorLogger.startPerformanceMonitoring(blankOperation);
+        ErrorLogger.logPerformanceMetric(blankOperation, executionTime);
+
+        ErrorLogger.flushPerformanceMetrics();
+
         Test.stopTest();
 
         // ✅ ASSERT
-        // Should handle gracefully without throwing exceptions
+        List<Performance_Metric__c> metrics = [SELECT Id FROM Performance_Metric__c];
+
+        // No metrics should be created for null/blank operation names
+        System.assertEquals(0, metrics.size(),
+            '📊 Null/blank operation names should be rejected gracefully - no metrics created');
+
+        // Verify methods completed without throwing NullPointerException
         System.assert(true,
-            '✅ Null operation names handled gracefully');
+            '✅ All methods handled null/blank gracefully without exceptions');
     }
 
     /**
