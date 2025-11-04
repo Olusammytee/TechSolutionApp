@@ -550,32 +550,57 @@ global with sharing class OrderRESTService {
     }
 
     /**
-     * @description Handles DML exceptions with specific error details
+     * @description Handles DML exceptions with sanitized error details
+     *
+     * SECURITY NOTE: Do NOT expose internal field names or database details to clients.
+     * Full error details are logged server-side via ErrorLogger for debugging.
      */
     private static OrderResponse handleDmlException(DmlException e, RestResponse restResponse) {
         OrderResponse response = new OrderResponse();
         response.success = false;
-        response.errorMessage = e.getDmlMessage(0);
-        response.errorDetails = 'DML Error on field: ' + e.getDmlFieldNames(0);
+
+        // Sanitized error message for client (no field names or internal details)
+        response.errorMessage = 'Unable to process the request due to invalid data. ' +
+                               'Please check your input and try again.';
+
+        // Generate error reference ID for support purposes
+        response.errorReference = String.valueOf(System.currentTimeMillis());
+
         restResponse.statusCode = 400; // Bad Request
 
-        // Log error for monitoring
+        // Log FULL error details server-side (including field names, stack trace)
+        // This is secure - logs stay on server and aren't exposed to client
         ErrorLogger.logError('OrderRESTService', 'DML Operation', e);
 
         return response;
     }
 
     /**
-     * @description Handles general exceptions
+     * @description Handles general exceptions with sanitized error details
+     *
+     * SECURITY NOTE: NEVER expose stack traces, internal paths, or implementation
+     * details to API clients. This prevents information disclosure vulnerabilities
+     * that could aid attackers in understanding your system architecture.
+     *
+     * Full stack traces and error details are logged server-side via ErrorLogger
+     * for debugging and monitoring purposes.
      */
     private static OrderResponse handleException(Exception e, RestResponse restResponse) {
         OrderResponse response = new OrderResponse();
         response.success = false;
-        response.errorMessage = e.getMessage();
-        response.errorDetails = e.getStackTraceString();
+
+        // Generic error message for client (no stack traces or internal details)
+        response.errorMessage = 'An unexpected error occurred while processing your request. ' +
+                               'Please try again later or contact support if the issue persists.';
+
+        // Generate error reference ID for support/debugging correlation
+        response.errorReference = String.valueOf(System.currentTimeMillis());
+
         restResponse.statusCode = 500; // Internal Server Error
 
-        // Log error for monitoring
+        // Log FULL error details server-side (stack trace, message, context)
+        // This is secure - logs stay on server and help with debugging
+        // Never expose this to the client!
         ErrorLogger.logError('OrderRESTService', 'REST Operation', e);
 
         return response;
@@ -585,13 +610,20 @@ global with sharing class OrderRESTService {
 
     /**
      * @description Standard API response wrapper
+     *
      * LEARNING POINT: Always use consistent response structure for APIs
+     *
+     * SECURITY NOTE: This response structure follows security best practices:
+     * - errorReference: Provides correlation ID for support (not internal details)
+     * - errorMessage: Generic, user-friendly message (not stack traces)
+     * - Full error details are NEVER exposed to clients
+     * - Internal details are logged server-side only
      */
     global class OrderResponse {
         global Boolean success;
         global String message;
         global String errorMessage;
-        global String errorDetails;
+        global String errorReference;  // Error correlation ID (NOT internal details)
         global List<OrderData> orders;
         global Integer totalRecords;
 

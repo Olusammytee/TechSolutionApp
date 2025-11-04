@@ -808,6 +808,95 @@ public static void enforceRateLimit() {
 }
 ```
 
+#### 6. Secure Error Responses
+
+**⚠️ CRITICAL SECURITY: Information Disclosure via Stack Traces**
+
+One of the most common security vulnerabilities in REST APIs is exposing internal implementation details through error messages.
+
+**What NOT to do:**
+```apex
+// ❌ SECURITY VULNERABILITY - Information Disclosure
+catch (Exception e) {
+    response.errorMessage = e.getMessage();
+    response.errorDetails = e.getStackTraceString(); // DANGER!
+    response.stackTrace = e.getStackTrace();          // DANGER!
+    response.lineNumber = e.getLineNumber();          // DANGER!
+}
+```
+
+**Example leaked information:**
+```
+Stack trace:
+  Class.OrderRESTService.createOrder: line 245, column 15
+  Class.DatabaseUtils.executeQuery: line 89, column 23
+  Class.ConfigManager.getApiKey: line 12, column 8
+```
+
+**What attackers learn:**
+- ✅ Internal class names and structure
+- ✅ File paths and directory structure
+- ✅ Line numbers for targeted attacks
+- ✅ Framework and library versions
+- ✅ Database query patterns
+- ✅ Configuration mechanisms
+
+**Secure approach:**
+```apex
+// ✅ SECURE - No information disclosure
+catch (Exception e) {
+    // 1. Generic message for client
+    response.errorMessage = 'An unexpected error occurred. ' +
+                           'Please contact support with reference: ' +
+                           errorRef;
+
+    // 2. Error reference for correlation
+    String errorRef = String.valueOf(System.currentTimeMillis());
+    response.errorReference = errorRef;
+
+    // 3. Log FULL details server-side (secure)
+    ErrorLogger.logError(
+        'OrderRESTService',
+        'createOrder',
+        e  // Stack trace logged server-side only
+    );
+
+    // 4. Return 500 status
+    RestContext.response.statusCode = 500;
+}
+```
+
+**Secure error response example:**
+```json
+{
+  "success": false,
+  "errorMessage": "An unexpected error occurred. Please contact support.",
+  "errorReference": "1730739456789"
+}
+```
+
+**Benefits:**
+- ❌ No internal details exposed to attackers
+- ✅ User gets helpful message
+- ✅ Support can correlate via errorReference
+- ✅ Full details logged server-side for debugging
+- ✅ Complies with security best practices
+
+**Additional tips:**
+```apex
+// Don't expose database field names
+// ❌ Bad: "Error on field Customer__c: value too long"
+// ✅ Good: "Invalid input. Please check your data."
+
+// Don't expose validation rules
+// ❌ Bad: "Failed validation rule: Prevent_Negative_Amount_Rule"
+// ✅ Good: "Unable to process request due to invalid data."
+
+// Don't expose permission errors
+// ❌ Bad: "User lacks UPDATE permission on Order__c.Total_Amount__c"
+// ✅ Good: "Insufficient permissions to perform this operation."
+```
+
 ---
 
 ## Testing REST APIs
@@ -939,6 +1028,36 @@ try {
 
 // ❌ Never let exceptions bubble up unhandled
 ```
+
+**🔒 CRITICAL SECURITY: Never Expose Stack Traces!**
+
+```apex
+// ❌ SECURITY VULNERABILITY - Do NOT do this!
+private static OrderResponse handleException(Exception e) {
+    response.errorMessage = e.getMessage();
+    response.errorDetails = e.getStackTraceString(); // ⚠️ EXPOSES INTERNALS!
+    return response;
+}
+
+// ✅ SECURE - Sanitize errors before returning to client
+private static OrderResponse handleException(Exception e) {
+    // Generic message for client
+    response.errorMessage = 'An unexpected error occurred. Please try again.';
+    response.errorReference = String.valueOf(System.currentTimeMillis());
+
+    // Log FULL details server-side (stack trace, etc.)
+    ErrorLogger.logError('MyService', 'operation', e);
+
+    return response;
+}
+```
+
+**Why this matters:**
+- Stack traces reveal internal paths, class names, line numbers
+- Attackers use this information to map your architecture
+- Helps identify potential vulnerabilities
+- Exposes framework versions and dependencies
+- **Always log server-side, never expose to clients!**
 
 ### 4. Input Validation
 
