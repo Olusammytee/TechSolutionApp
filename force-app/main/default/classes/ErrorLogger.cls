@@ -64,6 +64,13 @@ public class ErrorLogger {
      * @param operationName Name of the operation being monitored
      */
     public static void startPerformanceMonitoring(String operationName) {
+        // Defensive programming: Apex Maps cannot have null keys
+        if (String.isBlank(operationName)) {
+            System.debug(LoggingLevel.WARN,
+                'Cannot start performance monitoring with null or blank operation name');
+            return;
+        }
+
         operationStartTimes.put(operationName, System.currentTimeMillis());
     }
     
@@ -72,6 +79,13 @@ public class ErrorLogger {
      * @param operationName Name of the operation being monitored
      */
     public static void endPerformanceMonitoring(String operationName) {
+        // Defensive programming: handle null/blank operation names
+        if (String.isBlank(operationName)) {
+            System.debug(LoggingLevel.WARN,
+                'Cannot end performance monitoring with null or blank operation name');
+            return;
+        }
+
         Long startTime = operationStartTimes.get(operationName);
         if (startTime != null) {
             Long executionTime = System.currentTimeMillis() - startTime;
@@ -96,6 +110,13 @@ public class ErrorLogger {
      * @param additionalContext Additional context information
      */
     public static void logPerformanceMetric(String operation, Long executionTime, String additionalContext) {
+        // Defensive programming: validate required parameters
+        if (String.isBlank(operation)) {
+            System.debug(LoggingLevel.WARN,
+                'Cannot log performance metric with null or blank operation name');
+            return;
+        }
+
         try {
             Performance_Metric__c metric = new Performance_Metric__c(
                 Operation_Name__c = operation,

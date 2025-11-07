@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Platform Event fired when an order status changes. Enables real-time notifications and event-driven architecture for order processing workflows.</description>
+    <eventType>HighVolume</eventType>
+    <label>Order Status Change Event</label>
+    <pluralLabel>Order Status Change Events</pluralLabel>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
+</CustomObject>
