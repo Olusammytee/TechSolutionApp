@@ -12,6 +12,7 @@
   <label>TechSolutionApp</label>
   <navType>Standard</navType>
   <tabs>standard-Home</tabs>
+  <tabs>Frontend_App</tabs>
   <tabs>Device__c</tabs>
   <tabs>Customer__c</tabs>
   <tabs>Supplier__c</tabs>
