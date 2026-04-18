@@ -1,0 +1,38 @@
+<template>
+    <lightning-card title="Tech Solutions Frontend App" icon-name="custom:custom63">
+        <div class="slds-p-horizontal_medium slds-p-top_small slds-p-bottom_medium">
+            <lightning-radio-group
+                name="viewSelector"
+                label="App View"
+                type="button"
+                options={viewOptions}
+                value={activeView}
+                onchange={handleViewChange}>
+            </lightning-radio-group>
+        </div>
+
+        <template if:true={isOverview}>
+            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                <div class="slds-box slds-theme_default slds-m-bottom_medium">
+                    <p class="slds-text-heading_small">Welcome to Tech Solutions</p>
+                    <p class="slds-text-body_regular slds-m-top_x-small">
+                        This frontend app combines operational order management and enterprise analytics in one place.
+                    </p>
+                </div>
+                <c-order-dashboard-minimal></c-order-dashboard-minimal>
+            </div>
+        </template>
+
+        <template if:true={isOperations}>
+            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                <c-order-dashboard></c-order-dashboard>
+            </div>
+        </template>
+
+        <template if:true={isEnterprise}>
+            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+                <c-enterprise-dashboard></c-enterprise-dashboard>
+            </div>
+        </template>
+    </lightning-card>
+</template>
