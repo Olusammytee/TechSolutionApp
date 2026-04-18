@@ -1,22 +1,56 @@
 <template>
-    <lightning-card title="Tech Solutions Frontend App" icon-name="custom:custom63">
-        <div class="slds-p-horizontal_medium slds-p-top_small slds-p-bottom_medium">
-            <lightning-radio-group
-                name="viewSelector"
-                label="App View"
-                type="button"
-                options={viewOptions}
-                value={activeView}
-                onchange={handleViewChange}>
-            </lightning-radio-group>
+    <lightning-card title="Tech Solutions Frontend App" icon-name="custom:custom63" class="app-shell">
+        <div class="hero slds-p-around_medium">
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <lightning-icon icon-name={heroIcon} alternative-text="View icon" size="small" class="slds-m-right_small"></lightning-icon>
+                        <h2 class="slds-text-heading_medium">{activeViewTitle}</h2>
+                    </div>
+                    <p class="slds-text-body_regular slds-m-top_x-small">
+                        {activeViewDescription}
+                    </p>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-radio-group
+                        name="viewSelector"
+                        label="App View"
+                        type="button"
+                        options={viewOptions}
+                        value={activeView}
+                        onchange={handleViewChange}>
+                    </lightning-radio-group>
+                </div>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_medium slds-p-top_medium">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <div class="kpi-card kpi-card_blue">
+                    <p class="slds-text-title_caps">Experience</p>
+                    <p class="slds-text-heading_small">Unified Workspace</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <div class="kpi-card kpi-card_green">
+                    <p class="slds-text-title_caps">Focus</p>
+                    <p class="slds-text-heading_small">Operations + Insights</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <div class="kpi-card kpi-card_purple">
+                    <p class="slds-text-title_caps">Navigation</p>
+                    <p class="slds-text-heading_small">One-Click View Switch</p>
+                </div>
+            </div>
         </div>
 
         <template if:true={isOverview}>
-            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
-                <div class="slds-box slds-theme_default slds-m-bottom_medium">
-                    <p class="slds-text-heading_small">Welcome to Tech Solutions</p>
+            <div class="content-region slds-p-horizontal_medium slds-p-bottom_medium slds-m-top_medium">
+                <div class="slds-box slds-theme_default slds-m-bottom_medium intro">
+                    <p class="slds-text-heading_small">Welcome to the Frontend Experience</p>
                     <p class="slds-text-body_regular slds-m-top_x-small">
-                        This frontend app combines operational order management and enterprise analytics in one place.
+                        View operational activity and enterprise insights in a single, polished application surface.
                     </p>
                 </div>
                 <c-order-dashboard-minimal></c-order-dashboard-minimal>
@@ -24,13 +58,13 @@
         </template>
 
         <template if:true={isOperations}>
-            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <div class="content-region slds-p-horizontal_medium slds-p-bottom_medium slds-m-top_medium">
                 <c-order-dashboard></c-order-dashboard>
             </div>
         </template>
 
         <template if:true={isEnterprise}>
-            <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <div class="content-region slds-p-horizontal_medium slds-p-bottom_medium slds-m-top_medium">
                 <c-enterprise-dashboard></c-enterprise-dashboard>
             </div>
         </template>

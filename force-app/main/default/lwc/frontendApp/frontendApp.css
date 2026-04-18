@@ -1,3 +1,36 @@
-.slds-box {
-    border-radius: 0.25rem;
+.app-shell {
+    --app-border: #d8dde6;
+}
+
+.hero {
+    background: linear-gradient(135deg, #0f4c81 0%, #1b96ff 55%, #58b7ff 100%);
+    color: #ffffff;
+}
+
+.kpi-card {
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.kpi-card_blue {
+    background: #0f4c81;
+}
+
+.kpi-card_green {
+    background: #2e844a;
+}
+
+.kpi-card_purple {
+    background: #5a3e98;
+}
+
+.content-region {
+    background: #f8fafd;
+}
+
+.intro {
+    border: 1px solid var(--app-border);
+    border-radius: 0.5rem;
 }
