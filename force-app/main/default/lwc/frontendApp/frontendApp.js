@@ -1,7 +1,7 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement } from 'lwc';
 
 export default class FrontendApp extends LightningElement {
-    @track activeView = 'overview';
+    activeView = 'overview';
 
     viewOptions = [
         { label: 'Overview', value: 'overview' },
