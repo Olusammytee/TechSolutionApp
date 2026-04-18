@@ -126,6 +126,17 @@ sf org open --target-org GTP5org
 
 **⚠️ If you encounter any issues, follow the detailed deployment guide below or check [TROUBLESHOOTING.md](TROUBLESHOOTING.md).**
 
+### 🖥️ Local Prototype Preview (No Org Required)
+
+If you want a quick visual prototype without Salesforce org setup:
+
+```bash
+cd prototype/local-preview
+python3 -m http.server 8080
+```
+
+Then open: `http://localhost:8080`
+
 ---
 
 ## 🚀 Detailed Deployment Guide

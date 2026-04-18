@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Solutions Prototype</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main class="app">
+        <header class="hero">
+            <h1>Tech Solutions Prototype</h1>
+            <p>Unified Overview, Operations, and Enterprise views (local preview)</p>
+        </header>
+
+        <nav class="tabs" aria-label="Prototype Views">
+            <button class="tab is-active" data-view="overview">Overview</button>
+            <button class="tab" data-view="operations">Operations</button>
+            <button class="tab" data-view="enterprise">Enterprise</button>
+        </nav>
+
+        <section id="overview" class="panel is-active" aria-label="Overview view">
+            <div class="kpi-grid">
+                <article class="kpi">
+                    <h2>Total Orders</h2>
+                    <p id="totalOrders">142</p>
+                </article>
+                <article class="kpi">
+                    <h2>Total Revenue</h2>
+                    <p id="totalRevenue">$86,750</p>
+                </article>
+                <article class="kpi">
+                    <h2>Low Stock Alerts</h2>
+                    <p id="lowStock">7</p>
+                </article>
+            </div>
+            <article class="card">
+                <h3>Recent Activity</h3>
+                <ul>
+                    <li>Order #10091 confirmed</li>
+                    <li>iPhone 15 stock updated</li>
+                    <li>Enterprise report refreshed</li>
+                </ul>
+            </article>
+        </section>
+
+        <section id="operations" class="panel" aria-label="Operations view">
+            <article class="card">
+                <h3>Order Queue</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Device</th>
+                            <th>Qty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>#10091</td><td>MacBook Pro</td><td>3</td><td>Confirmed</td></tr>
+                        <tr><td>#10092</td><td>iPad Air</td><td>5</td><td>Draft</td></tr>
+                        <tr><td>#10093</td><td>iPhone 15</td><td>8</td><td>Shipped</td></tr>
+                    </tbody>
+                </table>
+            </article>
+        </section>
+
+        <section id="enterprise" class="panel" aria-label="Enterprise view">
+            <div class="kpi-grid">
+                <article class="kpi">
+                    <h2>Conversion Rate</h2>
+                    <p>68%</p>
+                </article>
+                <article class="kpi">
+                    <h2>Avg Order Value</h2>
+                    <p>$611</p>
+                </article>
+                <article class="kpi">
+                    <h2>Fulfillment SLA</h2>
+                    <p>97.4%</p>
+                </article>
+            </div>
+            <article class="card">
+                <h3>Executive Notes</h3>
+                <p>Revenue trend remains positive with strongest growth in smartphones and tablets.</p>
+            </article>
+        </section>
+    </main>
+
+    <script src="./app.js"></script>
+</body>
+</html>
